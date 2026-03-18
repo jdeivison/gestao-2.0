@@ -1,155 +1,285 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Gestão Pro - Sistema OS</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
-<body class="light-mode">
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body class="light-mode">
     <div class="wrapper">
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-logo">
-                <h2 id="logo-text">G-PRO</h2>
-                <button id="toggle-btn" onclick="toggleSidebar()">☰</button>
-            </div>
-            <nav class="sidebar-nav">
-                <button onclick="showSection('os-section')" title="Nova OS"><i>📄</i> <span>Nova Ordem</span></button>
-                <button onclick="showSection('estoque-section')" title="Estoque"><i>📦</i> <span>Estoque</span></button>
-                <button onclick="showSection('financeiro-section')" title="Financeiro"><i>💰</i> <span>Financeiro</span></button>
-                <button onclick="showSection('remessa-section')" title="Remessas"><i>🚛</i> <span>Remessas</span></button>
-            </nav>
-        </aside>
-
-        <div class="main-container">
-            <header class="main-header">
-                <div class="header-left"></div>
-                <h1>Painel de Controle</h1>
-                <div class="header-right">
-                    <button id="theme-toggle" onclick="toggleTheme()">🌓 Alternar Tema</button>
-                </div>
-            </header>
-
-            <main id="content">
-                <div class="dashboard-cards">
-                    <div class="card-kpi blue">
-                        <div class="kpi-icon">📋</div>
-                        <div class="kpi-content">
-                            <span class="kpi-label">Ordens de Serviço</span>
-                            <span class="kpi-value" id="count-os">0</span>
-                            <div class="kpi-bar"><div class="fill" id="bar-os" style="width: 0%"></div></div>
-                        </div>
-                    </div>
-                    <div class="card-kpi green">
-                        <div class="kpi-icon">💵</div>
-                        <div class="kpi-content">
-                            <span class="kpi-label">Caixa Disponível</span>
-                            <span class="kpi-value" id="dash-saldo">R$ 0,00</span>
-                            <div class="kpi-bar"><div class="fill" id="bar-saldo" style="width: 0%"></div></div>
-                        </div>
-                    </div>
-                    <div class="card-kpi orange">
-                        <div class="kpi-icon">⚡</div>
-                        <div class="kpi-content">
-                            <span class="kpi-label">Pendências</span>
-                            <span class="kpi-value" id="count-pendencias">0</span>
-                            <div class="kpi-bar"><div class="fill" id="bar-pendencia" style="width: 0%"></div></div>
-                        </div>
-                    </div>
-                </div>
-
-                <section id="os-section">
-                    <div class="section-header">
-                        <h2>Abertura de Ordem de Serviço</h2>
-                        <span class="badge">Tecnologia G-Pro</span>
-                    </div>
-                    <form id="os-form" onsubmit="salvarOS(event)">
-                        <div class="grid-form">
-                            <div class="input-group">
-                                <label>Marca</label>
-                                <div class="input-container">
-                                    <input type="text" id="marca" placeholder="Fabricante">
-                                    <button type="button" class="btn-search" onclick="buscarHistorico('marca')">🔍</button>
-                                </div>
-                            </div>
-                            <div class="input-group">
-                                <label>Modelo</label>
-                                <div class="input-container">
-                                    <input type="text" id="modelo" placeholder="Modelo">
-                                    <button type="button" class="btn-search" onclick="buscarHistorico('modelo')">🔍</button>
-                                </div>
-                            </div>
-                            <div class="input-group">
-                                <label>N° de Série</label>
-                                <div class="input-container">
-                                    <input type="text" id="serie" placeholder="S/N">
-                                    <button type="button" class="btn-search" onclick="buscarHistorico('serie')">🔍</button>
-                                </div>
-                            </div>
-                            <div class="input-group">
-                                <label>CPF/CNPJ Cliente</label>
-                                <div class="input-container">
-                                    <input type="text" id="documento-cliente" placeholder="Documento">
-                                    <button type="button" class="btn-search" onclick="buscarHistorico('documento-cliente')">🔍</button>
-                                </div>
-                            </div>
-                            <div class="input-group"><label>N° Lacre</label><input type="text" id="lacre" class="simple-input"></div>
-                            <div class="input-group"><label>Etiqueta</label><input type="text" id="etiqueta" class="simple-input"></div>
-                            <div class="input-group"><label>Inventário</label><input type="text" id="inventario" class="simple-input"></div>
-                        </div>
-                        <div class="actions">
-                            <button type="button" id="btn-venda" onclick="converterEmVenda()">🛒 Venda / Imprimir</button>
-                            <button type="submit" class="btn-save">💾 Salvar OS</button>
-                        </div>
-                    </form>
-                </section>
-
-                <section id="estoque-section" style="display:none;">
-                    <h2>Controle de Estoque</h2>
-                    <div class="form-inline">
-                        <input type="text" id="est-nome" placeholder="Produto">
-                        <input type="number" id="est-qtd" placeholder="Qtd">
-                        <button onclick="adicionarEstoque()" class="btn-save">Entrada</button>
-                    </div>
-                    <table class="data-table">
-                        <thead><tr><th>Item</th><th>Qtd</th><th>Data</th><th>Ações</th></tr></thead>
-                        <tbody id="corpo-estoque"></tbody>
-                    </table>
-                </section>
-
-                <section id="financeiro-section" style="display:none;">
-                    <h2>Contas e Movimentação de Caixa</h2>
-                    <div class="form-inline">
-                        <input type="text" id="fin-desc" placeholder="Descrição da Conta (Luz, Aluguel...)">
-                        <input type="number" id="fin-valor" placeholder="R$">
-                        <button onclick="registrarPagamentoManual()" style="background:var(--warning); color:white; border:none; padding:10px; border-radius:8px; cursor:pointer;">Pagar Conta</button>
-                    </div>
-                    <table class="data-table">
-                        <thead><tr><th>Descrição</th><th>Valor</th><th>Tipo</th><th>Data</th></tr></thead>
-                        <tbody id="corpo-financeiro"></tbody>
-                    </table>
-                </section>
-
-                <section id="remessa-section" style="display:none;">
-                    <h2>Garantia, Conserto e Remessas</h2>
-                    <table class="data-table">
-                        <thead><tr><th>Item/SN</th><th>Motivo</th><th>Status</th><th>Data</th></tr></thead>
-                        <tbody id="corpo-remessas"></tbody>
-                    </table>
-                </section>
-            </main>
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+          <h2 id="logo-text">G-PRO</h2>
+          <button id="toggle-btn" onclick="toggleSidebar()">☰</button>
         </div>
+        <nav class="sidebar-nav">
+          <button onclick="showSection('os-section')" title="Nova OS">
+            <i>📄</i> <span>Nova Ordem</span>
+          </button>
+          <button onclick="showSection('estoque-section')" title="Estoque">
+            <i>📦</i> <span>Estoque</span>
+          </button>
+          <button
+            onclick="showSection('financeiro-section')"
+            title="Financeiro"
+          >
+            <i>💰</i> <span>Financeiro</span>
+          </button>
+          <button onclick="showSection('remessa-section')" title="Remessas">
+            <i>🚛</i> <span>Remessas</span>
+          </button>
+        </nav>
+      </aside>
+
+      <div class="main-container">
+        <header class="main-header">
+          <div class="header-left"></div>
+          <h1>Painel de Controle</h1>
+          <div class="header-right">
+            <button id="theme-toggle" onclick="toggleTheme()">
+              🌓 Alternar Tema
+            </button>
+          </div>
+        </header>
+
+        <main id="content">
+          <div class="dashboard-cards">
+            <div class="card-kpi blue">
+              <div class="kpi-icon">📋</div>
+              <div class="kpi-content">
+                <span class="kpi-label">Ordens de Serviço</span>
+                <span class="kpi-value" id="count-os">0</span>
+                <div class="kpi-bar">
+                  <div class="fill" id="bar-os" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="card-kpi green">
+              <div class="kpi-icon">💵</div>
+              <div class="kpi-content">
+                <span class="kpi-label">Caixa Disponível</span>
+                <span class="kpi-value" id="dash-saldo">R$ 0,00</span>
+                <div class="kpi-bar">
+                  <div class="fill" id="bar-saldo" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+            <div class="card-kpi orange">
+              <div class="kpi-icon">⚡</div>
+              <div class="kpi-content">
+                <span class="kpi-label">Pendências</span>
+                <span class="kpi-value" id="count-pendencias">0</span>
+                <div class="kpi-bar">
+                  <div class="fill" id="bar-pendencia" style="width: 0%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <section id="os-section">
+            <div class="section-header">
+              <h2>Abertura de Ordem de Serviço</h2>
+            </div>
+
+            <form id="os-form" onsubmit="salvarOS(event)">
+              <div class="grid-form">
+                <div class="input-group">
+                  <label>Marca</label>
+                  <div class="input-container">
+                    <input type="text" id="marca" placeholder="Fabricante" />
+                    <button
+                      type="button"
+                      class="btn-search"
+                      onclick="buscarHistorico('marca')"
+                    >
+                      🔍
+                    </button>
+                  </div>
+                </div>
+
+                <div class="input-group">
+                  <label>Modelo</label>
+                  <div class="input-container">
+                    <input type="text" id="modelo" placeholder="Modelo" />
+                    <button
+                      type="button"
+                      class="btn-search"
+                      onclick="buscarHistorico('modelo')"
+                    >
+                      🔍
+                    </button>
+                  </div>
+                </div>
+
+                <div class="input-group">
+                  <label>N° de Série</label>
+                  <div class="input-container">
+                    <input type="text" id="serie" placeholder="S/N" />
+                    <button
+                      type="button"
+                      class="btn-search"
+                      onclick="buscarHistorico('serie')"
+                    >
+                      🔍
+                    </button>
+                  </div>
+                </div>
+
+                <div class="input-group">
+                  <label>CPF/CNPJ Cliente</label>
+                  <div class="input-container">
+                    <input
+                      type="text"
+                      id="documento-cliente"
+                      placeholder="Documento"
+                    />
+                    <button
+                      type="button"
+                      class="btn-search"
+                      onclick="buscarHistorico('documento-cliente')"
+                    >
+                      🔍
+                    </button>
+                  </div>
+                </div>
+
+                <div class="input-group">
+                  <label>N° Lacre</label>
+                  <div class="input-container">
+                    <input
+                      type="text"
+                      id="lacre"
+                      placeholder="Digite o lacre"
+                    />
+                  </div>
+                </div>
+
+                <div class="input-group">
+                  <label>Etiqueta</label>
+                  <div class="input-container">
+                    <input
+                      type="text"
+                      id="etiqueta"
+                      placeholder="Digite a etiqueta"
+                    />
+                  </div>
+                </div>
+
+                <div class="input-group">
+                  <label>Inventário</label>
+                  <div class="input-container">
+                    <input
+                      type="text"
+                      id="inventario"
+                      placeholder="Digite o inventário"
+                    />
+                  </div>
+                </div>
+              </div>
+              <div class="actions">
+                <button
+                  type="button"
+                  id="btn-venda"
+                  onclick="converterEmVenda()"
+                >
+                  🛒 Venda / Imprimir
+                </button>
+                <button type="submit" class="btn-save">💾 Salvar OS</button>
+              </div>
+            </form>
+          </section>
+
+          <section id="estoque-section" style="display: none">
+            <h2>Controle de Estoque</h2>
+            <div class="form-inline">
+              <input type="text" id="est-nome" placeholder="Produto" />
+              <input type="number" id="est-qtd" placeholder="Qtd" />
+              <button onclick="adicionarEstoque()" class="btn-save">
+                Entrada
+              </button>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Item</th>
+                  <th>Qtd</th>
+                  <th>Data</th>
+                  <th>Ações</th>
+                </tr>
+              </thead>
+              <tbody id="corpo-estoque"></tbody>
+            </table>
+          </section>
+
+          <section id="financeiro-section" style="display: none">
+            <h2>Contas e Movimentação de Caixa</h2>
+            <div class="form-inline">
+              <input
+                type="text"
+                id="fin-desc"
+                placeholder="Descrição da Conta (Luz, Aluguel...)"
+              />
+              <input type="number" id="fin-valor" placeholder="R$" />
+              <button
+                onclick="registrarPagamentoManual()"
+                style="
+                  background: var(--warning);
+                  color: white;
+                  border: none;
+                  padding: 10px;
+                  border-radius: 8px;
+                  cursor: pointer;
+                "
+              >
+                Pagar Conta
+              </button>
+            </div>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Descrição</th>
+                  <th>Valor</th>
+                  <th>Tipo</th>
+                  <th>Data</th>
+                </tr>
+              </thead>
+              <tbody id="corpo-financeiro"></tbody>
+            </table>
+          </section>
+
+          <section id="remessa-section" style="display: none">
+            <h2>Garantia, Conserto e Remessas</h2>
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Item/SN</th>
+                  <th>Motivo</th>
+                  <th>Status</th>
+                  <th>Data</th>
+                </tr>
+              </thead>
+              <tbody id="corpo-remessas"></tbody>
+            </table>
+          </section>
+        </main>
+      </div>
     </div>
 
     <div id="modal-busca" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="fecharModal()">&times;</span>
-            <h3 id="modal-titulo">Busca Avançada</h3>
-            <input type="text" id="input-busca-modal" placeholder="Filtrar..." onkeyup="filtrarBusca()">
-            <ul id="lista-resultados"></ul>
-        </div>
+      <div class="modal-content">
+        <span class="close" onclick="fecharModal()">&times;</span>
+        <h3 id="modal-titulo">Busca Avançada</h3>
+        <input
+          type="text"
+          id="input-busca-modal"
+          placeholder="Filtrar..."
+          onkeyup="filtrarBusca()"
+        />
+        <ul id="lista-resultados"></ul>
+      </div>
     </div>
 
     <script src="js/os.js"></script>
-</body>
+  </body>
 </html>
