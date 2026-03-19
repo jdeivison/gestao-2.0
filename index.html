@@ -191,57 +191,146 @@
           </section>
 
           <section id="estoque-section" style="display: none">
-            <h2>Controle de Estoque</h2>
-            <div class="form-inline">
-              <input type="text" id="est-nome" placeholder="Produto" />
-              <input type="number" id="est-qtd" placeholder="Qtd" />
-              <button onclick="adicionarEstoque()" class="btn-save">
-                Entrada
-              </button>
+            <div class="section-header">
+              <h2>Controle de Estoque Profissional</h2>
+              <span class="badge">Gestão de Insumos</span>
             </div>
+
+            <div class="grid-form" style="margin-bottom: 30px">
+              <div class="input-group">
+                <label>Produto / Peça</label>
+                <div class="input-container">
+                  <input
+                    type="text"
+                    id="est-nome"
+                    placeholder=" Ex: Impressor térmico"
+                  />
+                </div>
+              </div>
+              <div class="input-group">
+                <label>Quantidade</label>
+                <div class="input-container">
+                  <input type="number" id="est-qtd" placeholder="0" />
+                </div>
+              </div>
+              <div class="input-group">
+                <label>Preço de Custo (R$)</label>
+                <div class="input-container">
+                  <input type="number" id="est-custo" placeholder="0.00" />
+                </div>
+              </div>
+              <div class="input-group" style="justify-content: flex-end">
+                <button
+                  onclick="adicionarEstoque()"
+                  class="btn-save"
+                  style="width: 100%; margin: 0"
+                >
+                  📥 Registrar Entrada
+                </button>
+              </div>
+            </div>
+
             <table class="data-table">
               <thead>
                 <tr>
                   <th>Item</th>
-                  <th>Qtd</th>
-                  <th>Data</th>
+                  <th>Qtd Atual</th>
+                  <th>Custo Unit.</th>
+                  <th>Última Atualização</th>
                   <th>Ações</th>
                 </tr>
               </thead>
               <tbody id="corpo-estoque"></tbody>
             </table>
           </section>
-
           <section id="financeiro-section" style="display: none">
-            <h2>Contas e Movimentação de Caixa</h2>
-            <div class="form-inline">
-              <input
-                type="text"
-                id="fin-desc"
-                placeholder="Descrição da Conta (Luz, Aluguel...)"
-              />
-              <input type="number" id="fin-valor" placeholder="R$" />
-              <button
-                onclick="registrarPagamentoManual()"
+            <div class="section-header">
+              <h2>Gestão Financeira e Fluxo de Caixa</h2>
+              <div class="header-right">
+                <span class="badge" id="status-caixa">Caixa Aberto</span>
+              </div>
+            </div>
+
+            <div class="grid-form" style="margin-bottom: 20px">
+              <div
+                class="card-kpi"
                 style="
-                  background: var(--warning);
-                  color: white;
-                  border: none;
-                  padding: 10px;
-                  border-radius: 8px;
-                  cursor: pointer;
+                  padding: 15px;
+                  background: rgba(46, 204, 113, 0.1);
+                  border: 1px solid var(--success);
                 "
               >
-                Pagar Conta
-              </button>
+                <small>A Receber</small>
+                <h3 id="total-receber">R$ 0,00</h3>
+              </div>
+              <div
+                class="card-kpi"
+                style="
+                  padding: 15px;
+                  background: rgba(231, 76, 60, 0.1);
+                  border: 1px solid #e74c3c;
+                "
+              >
+                <small>A Pagar</small>
+                <h3 id="total-pagar">R$ 0,00</h3>
+              </div>
             </div>
+
+            <div
+              class="grid-form"
+              style="
+                background: var(--input-bg);
+                padding: 20px;
+                border-radius: 15px;
+                margin-bottom: 25px;
+              "
+            >
+              <div class="input-group">
+                <label>Descrição</label>
+                <input
+                  type="text"
+                  id="fin-desc"
+                  class="input-box"
+                  placeholder="Ex: Aluguel, Compra de Peças..."
+                />
+              </div>
+              <div class="input-group">
+                <label>Valor (R$)</label>
+                <input type="number"
+                class="input-box"
+                id="fin-valor" placeholder="0.00" />
+              </div>
+              <div class="input-group">
+                <label>Tipo</label>
+                <select
+                  id="fin-tipo"
+                  class="input-box"
+                  
+                >
+                  <option value="Entrada">Entrada (Receber)</option>
+                  <option value="Saída">Saída (Pagar)</option>
+                </select>
+              </div>
+              <div class="input-group">
+                <label>&nbsp;</label>
+                <button
+                  onclick="registrarFinanceiroManual()"
+                  class="btn-save"
+                  style="margin: 0"
+                >
+                  Lançar
+                </button>
+              </div>
+            </div>
+
             <table class="data-table">
               <thead>
                 <tr>
+                  <th>Data</th>
                   <th>Descrição</th>
                   <th>Valor</th>
-                  <th>Tipo</th>
-                  <th>Data</th>
+                  <th>Categoria</th>
+                  <th>Status</th>
                 </tr>
               </thead>
               <tbody id="corpo-financeiro"></tbody>

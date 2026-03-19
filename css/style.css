@@ -108,21 +108,21 @@ html {
 
 /* Cole logo abaixo de .sidebar-nav button */
 .sidebar-nav button:hover {
-    background-color: rgba(52, 152, 219, 0.15); /* Fundo azul sutil */
-    color: #ffffff; 
-    padding-left: 35px; /* Efeito de deslocamento */
+  background-color: rgba(52, 152, 219, 0.15); /* Fundo azul sutil */
+  color: #ffffff;
+  padding-left: 35px; /* Efeito de deslocamento */
 }
 
 .sidebar-nav button:hover i {
-    color: var(--primary);
-    transform: scale(1.2);
+  color: var(--primary);
+  transform: scale(1.2);
 }
 
 /* 1. Ajuste o topo da Sidebar para ser um Flexbox que joga os itens para os lados */
 .sidebar-logo {
   padding: 20px 15px;
   display: flex;
-  align-items: center;         /* Alinha verticalmente */
+  align-items: center; /* Alinha verticalmente */
   justify-content: space-between; /* MÁGICA AQUI: Joga o texto pra esquerda e o botão pra direita */
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
   min-height: 70px;
@@ -422,4 +422,11 @@ section {
 }
 .data-table tr td:last-child {
   border-radius: 0 10px 10px 0;
+}
+
+/* estilo do input do financeiro */
+.input-box {
+  padding: 12px;
+  border-radius: 10px;
+  border: 2px solid var(--border);
 }
