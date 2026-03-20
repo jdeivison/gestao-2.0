@@ -1,11 +1,11 @@
 // --- Funções do Modal de Aviso ---
 function exibirAviso(mensagem) {
-    document.getElementById('modal-aviso-mensagem').innerText = mensagem;
-    document.getElementById('modal-aviso').style.display = 'block';
+  document.getElementById("modal-aviso-mensagem").innerText = mensagem;
+  document.getElementById("modal-aviso").style.display = "block";
 }
 
 function fecharAviso() {
-    document.getElementById('modal-aviso').style.display = 'none';
+  document.getElementById("modal-aviso").style.display = "none";
 }
 // ------------------------------------
 
@@ -57,7 +57,7 @@ function showSection(sectionId) {
   document.getElementById(sectionId).style.display = "block";
 
   // Salva a última seção ativa no localStorage
-  localStorage.setItem('last_active_section', sectionId);
+  localStorage.setItem("last_active_section", sectionId);
 
   if (sectionId === "financeiro-section") renderizarFinanceiro();
   if (sectionId === "estoque-section") renderizarEstoque();
@@ -143,47 +143,29 @@ function salvarOS(event) {
 }
 
 function atualizarDashboard() {
-  const historico = JSON.parse(localStorage.getItem("meu_sistema_os")) || [];
   const financeiro = JSON.parse(localStorage.getItem("financeiro_dados")) || [];
-  const remessas = JSON.parse(localStorage.getItem("remessas")) || [];
 
-  document.getElementById("count-os").innerText = historico.length;
-  document.getElementById("count-pendencias").innerText = remessas.length;
+  let totalEntradas = 0;
+  let totalSaidas = 0;
 
-  let saldo = financeiro.reduce(
-    (acc, current) =>
-      current.tipo === "Entrada" ? acc + current.valor : acc - current.valor,
-    0,
-  );
-  document.getElementById("dash-saldo").innerText =
-    `R$ ${saldo.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
+  financeiro.forEach((item) => {
+    if (item.tipo === "Entrada") {
+      totalEntradas += parseFloat(item.valor);
+    } else {
+      totalSaidas += parseFloat(item.valor);
+    }
+  });
 
-  document.getElementById("bar-os").style.width =
-    Math.min(historico.length * 10, 100) + "%";
-  document.getElementById("bar-saldo").style.width =
-    Math.min((saldo / 5000) * 100, 100) + "%";
-  document.getElementById("bar-pendencia").style.width =
-    Math.min(remessas.length * 20, 100) + "%";
-}
+  // Atualiza os cards superiores
+  document.getElementById("total-receber").innerText =
+    `R$ ${totalEntradas.toFixed(2)}`;
+  document.getElementById("total-pagar").innerText =
+    `R$ ${totalSaidas.toFixed(2)}`;
 
-function adicionarEstoque() {
-  const nome = document.getElementById("est-nome").value;
-  const qtd = document.getElementById("est-qtd").value;
-  if (!nome || !qtd) return;
-  let estoque = JSON.parse(localStorage.getItem("estoque")) || [];
-  estoque.push({ nome, qtd, data: new Date().toLocaleDateString() });
-  localStorage.setItem("estoque", JSON.stringify(estoque));
-  renderizarEstoque();
-}
-
-function renderizarEstoque() {
-  const lista = JSON.parse(localStorage.getItem("estoque")) || [];
-  document.getElementById("corpo-estoque").innerHTML = lista
-    .map(
-      (i) =>
-        `<tr><td>${i.nome}</td><td>${i.qtd} un</td><td>${i.data}</td><td><button class="btn-search" onclick="gerarRemessaManual('${i.nome}')">🚛</button></td></tr>`,
-    )
-    .join("");
+  // Atualiza o saldo principal do Dashboard (se houver o elemento)
+  const saldoTotal = totalEntradas - totalSaidas;
+  const dashSaldo = document.getElementById("dash-saldo");
+  if (dashSaldo) dashSaldo.innerText = `R$ ${saldoTotal.toFixed(2)}`;
 }
 
 function registrarPagamentoManual() {
@@ -210,6 +192,7 @@ function registrarFinanceiroManual() {
   salvarNoFinanceiro(desc, valor, tipo);
   document.getElementById("fin-desc").value = "";
   document.getElementById("fin-valor").value = "";
+
 }
 
 function salvarNoFinanceiro(desc, valor, tipo) {
@@ -236,25 +219,32 @@ function renderizarFinanceiro() {
     .join("");
 }
 
-let filtroAtualRemessas = 'Todos';
+let filtroAtualRemessas = "Todos";
 
-function renderizarRemessas(filtro = 'Todos') {
+function renderizarRemessas(filtro = "Todos") {
   filtroAtualRemessas = filtro;
   const lista = JSON.parse(localStorage.getItem("remessas")) || [];
   const corpo = document.getElementById("corpo-remessas");
 
-  const listaFiltrada = filtro === 'Todos' ? lista : lista.filter(r => r.status === filtro);
+  const listaFiltrada =
+    filtro === "Todos" ? lista : lista.filter((r) => r.status === filtro);
 
-  corpo.innerHTML = listaFiltrada.map((r, index) => {
-      const originalIndex = lista.findIndex(original => original.item === r.item && original.data === r.data && original.status === r.status);
+  corpo.innerHTML = listaFiltrada
+    .map((r, index) => {
+      const originalIndex = lista.findIndex(
+        (original) =>
+          original.item === r.item &&
+          original.data === r.data &&
+          original.status === r.status,
+      );
 
-      let acoes = '';
-      if (r.status === 'Aguardando Envio') {
-          acoes = `<button class="btn-save" onclick="atualizarStatusRemessa(${originalIndex}, 'Em Trânsito')">Enviar</button>`;
-      } else if (r.status === 'Em Trânsito') {
-          acoes = `<button class="btn-save" onclick="atualizarStatusRemessa(${originalIndex}, 'Concluído')">Receber</button>`;
+      let acoes = "";
+      if (r.status === "Aguardando Envio") {
+        acoes = `<button class="btn-save" onclick="atualizarStatusRemessa(${originalIndex}, 'Em Trânsito')">Enviar</button>`;
+      } else if (r.status === "Em Trânsito") {
+        acoes = `<button class="btn-save" onclick="atualizarStatusRemessa(${originalIndex}, 'Concluído')">Receber</button>`;
       } else {
-          acoes = '<span>Finalizado</span>';
+        acoes = "<span>Finalizado</span>";
       }
 
       return `<tr>
@@ -265,42 +255,54 @@ function renderizarRemessas(filtro = 'Todos') {
                   <td>${r.data}</td>
                   <td>${acoes}</td>
               </tr>`;
-      }).join("");
+    })
+    .join("");
 }
 
 function filtrarRemessas(filtro) {
-    renderizarRemessas(filtro);
+  renderizarRemessas(filtro);
 }
 
 function atualizarStatusRemessa(index, novoStatus) {
-    let remessas = JSON.parse(localStorage.getItem("remessas")) || [];
-    const remessa = remessas[index];
+  let remessas = JSON.parse(localStorage.getItem("remessas")) || [];
+  const remessa = remessas[index];
 
-    if (!remessa) return;
+  if (!remessa) return;
 
-    remessa.status = novoStatus;
+  remessa.status = novoStatus;
 
-    if (novoStatus === 'Concluído') {
-        const devolver = confirm(`O item "${remessa.item}" retornou. Deseja adicioná-lo de volta ao estoque?`);
-        if (devolver) {
-            let estoque = JSON.parse(localStorage.getItem("estoque")) || [];
-            const itemEstoque = estoque.find(e => e.nome.toLowerCase() === remessa.item.toLowerCase());
-            if (itemEstoque) {
-                itemEstoque.qtd += remessa.qtd;
-            } else {
-                estoque.push({ nome: remessa.item, qtd: remessa.qtd, custo: 0, data: new Date().toLocaleDateString() });
-            }
-            localStorage.setItem("estoque", JSON.stringify(estoque));
-            exibirAviso(`${remessa.qtd} unidade(s) de "${remessa.item}" retornaram ao estoque.`);
-            if(document.getElementById('estoque-section').style.display !== 'none') {
-                renderizarEstoque();
-            }
-        }
+  if (novoStatus === "Concluído") {
+    const devolver = confirm(
+      `O item "${remessa.item}" retornou. Deseja adicioná-lo de volta ao estoque?`,
+    );
+    if (devolver) {
+      let estoque = JSON.parse(localStorage.getItem("estoque")) || [];
+      const itemEstoque = estoque.find(
+        (e) => e.nome.toLowerCase() === remessa.item.toLowerCase(),
+      );
+      if (itemEstoque) {
+        itemEstoque.qtd += remessa.qtd;
+      } else {
+        estoque.push({
+          nome: remessa.item,
+          qtd: remessa.qtd,
+          custo: 0,
+          data: new Date().toLocaleDateString(),
+        });
+      }
+      localStorage.setItem("estoque", JSON.stringify(estoque));
+      exibirAviso(
+        `${remessa.qtd} unidade(s) de "${remessa.item}" retornaram ao estoque.`,
+      );
+      if (document.getElementById("estoque-section").style.display !== "none") {
+        renderizarEstoque();
+      }
     }
+  }
 
-    localStorage.setItem("remessas", JSON.stringify(remessas));
-    renderizarRemessas(filtroAtualRemessas);
-    atualizarDashboard();
+  localStorage.setItem("remessas", JSON.stringify(remessas));
+  renderizarRemessas(filtroAtualRemessas);
+  atualizarDashboard();
 }
 
 function gerarRemessaManual(item) {
@@ -315,7 +317,7 @@ function gerarRemessaManual(item) {
     motivo,
     status: "Em Trânsito",
     data: new Date().toLocaleDateString(),
-    qtd: 1 // Adicionando qtd para consistencia
+    qtd: 1, // Adicionando qtd para consistencia
   });
   localStorage.setItem("remessas", JSON.stringify(remessas));
   renderizarRemessas();
@@ -349,10 +351,11 @@ window.onload = () => {
   bancoDadosFake.historicoServicos = [...salvos];
 
   // Recupera e exibe a última seção salva, ou a padrão
-  const lastSection = localStorage.getItem('last_active_section') || 'os-section';
+  const lastSection =
+    localStorage.getItem("last_active_section") || "os-section";
   showSection(lastSection);
-  
-  // As funções de renderização já são chamadas dentro de showSection, 
+
+  // As funções de renderização já são chamadas dentro de showSection,
   // então não é mais necessário chamá-las diretamente aqui.
   // Apenas o dashboard precisa de uma atualização inicial.
   atualizarDashboard();

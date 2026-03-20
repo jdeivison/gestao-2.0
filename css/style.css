@@ -468,3 +468,19 @@ section {
   border: 2px solid var(--border);
   width: 100%;
 }
+
+/* Alinha a coluna de valor da tabela financeira à direita */
+#corpo-financeiro tr td:nth-child(3) {
+  text-align: right;
+}
+
+/* Centraliza os dados da tabela para ficarem alinhados com os títulos */
+.data-table th, .data-table td {
+    text-align: center;
+    padding: 15px;
+}
+
+/* Garante que a descrição (que é texto longo) fique alinhada à esquerda */
+.data-table td:nth-child(2) {
+    text-align: left;
+}
