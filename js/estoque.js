@@ -1,11 +1,11 @@
 // --- Funções do Modal de Aviso ---
 function exibirAviso(mensagem) {
-    document.getElementById('modal-aviso-mensagem').innerText = mensagem;
-    document.getElementById('modal-aviso').style.display = 'block';
+  document.getElementById("modal-aviso-mensagem").innerText = mensagem;
+  document.getElementById("modal-aviso").style.display = "block";
 }
 
 function fecharAviso() {
-    document.getElementById('modal-aviso').style.display = 'none';
+  document.getElementById("modal-aviso").style.display = "none";
 }
 // ------------------------------------
 
@@ -51,69 +51,77 @@ function renderizarEstoque() {
       (i, index) => `
         <tr>
             <td><strong>${i.nome}</strong></td>
+            
             <td>${i.qtd} un</td>
-            <td>R$ ${i.custo.toFixed(2)}</td>
+            
+            <td>R$ ${parseFloat(i.custo).toFixed(2)}</td>
+            
             <td>${i.data}</td>
+            
             <td>
-                <button title="Enviar para Garantia/Conserto" class="btn-search" 
-                        onclick="abrirFluxoRemessa(${index})" style="background: var(--warning)">
-                    🚛
-                </button>
+                <button title="Enviar para Garantia/Conserto" class="btn-acao-remessa" 
+            onclick="abrirFluxoRemessa(${index})">
+        <i class="icon-truck"></i> </button>
             </td>
         </tr>
     `,
     )
     .join("");
 }
-
 let itemParaRemessa = null; // Guarda o { index, maxQtd } do item
 
 function fecharModalRemessaEstoque() {
-    document.getElementById('modal-remessa-estoque').style.display = 'none';
-    itemParaRemessa = null;
+  document.getElementById("modal-remessa-estoque").style.display = "none";
+  itemParaRemessa = null;
 }
 
 function confirmarEnvioRemessa() {
-    if (!itemParaRemessa) return;
+  if (!itemParaRemessa) return;
 
-    const motivo = document.getElementById('input-motivo-remessa').value;
-    const qtdSaida = parseInt(document.getElementById('input-qtd-remessa').value);
-    
-    if (!motivo || isNaN(qtdSaida) || qtdSaida <= 0 || qtdSaida > itemParaRemessa.maxQtd) {
-        return exibirAviso("Operação cancelada ou quantidade inválida.");
-    }
+  const motivo = document.getElementById("input-motivo-remessa").value;
+  const qtdSaida = parseInt(document.getElementById("input-qtd-remessa").value);
 
-    let estoque = JSON.parse(localStorage.getItem("estoque"));
-    const item = estoque[itemParaRemessa.index];
+  if (
+    !motivo ||
+    isNaN(qtdSaida) ||
+    qtdSaida <= 0 ||
+    qtdSaida > itemParaRemessa.maxQtd
+  ) {
+    return exibirAviso("Operação cancelada ou quantidade inválida.");
+  }
 
-    const motivosMap = { 1: "Garantia", 2: "Conserto", 3: "Devolução" };
-    const motivoFinal = motivosMap[motivo] || "Outros";
+  let estoque = JSON.parse(localStorage.getItem("estoque"));
+  const item = estoque[itemParaRemessa.index];
 
-    // 1. Diminuir do estoque
-    item.qtd -= qtdSaida;
-    if (item.qtd <= 0) estoque.splice(itemParaRemessa.index, 1); // Remove se zerar
-    localStorage.setItem("estoque", JSON.stringify(estoque));
+  const motivosMap = { 1: "Garantia", 2: "Conserto", 3: "Devolução" };
+  const motivoFinal = motivosMap[motivo] || "Outros";
 
-    // 2. Registrar na tabela de Remessas
-    let remessas = JSON.parse(localStorage.getItem("remessas")) || [];
-    remessas.push({
-        item: item.nome,
-        motivo: motivoFinal,
-        status: "Aguardando Envio",
-        qtd: qtdSaida,
-        data: new Date().toLocaleDateString(),
-    });
-    localStorage.setItem("remessas", JSON.stringify(remessas));
+  // 1. Diminuir do estoque
+  item.qtd -= qtdSaida;
+  if (item.qtd <= 0) estoque.splice(itemParaRemessa.index, 1); // Remove se zerar
+  localStorage.setItem("estoque", JSON.stringify(estoque));
 
-    exibirAviso(`Sucesso! ${qtdSaida} unidade(s) enviada(s) para ${motivoFinal}.`);
-    
-    fecharModalRemessaEstoque();
-    renderizarEstoque();
-    if (typeof atualizarDashboard === 'function') {
-        atualizarDashboard();
-    }
+  // 2. Registrar na tabela de Remessas
+  let remessas = JSON.parse(localStorage.getItem("remessas")) || [];
+  remessas.push({
+    item: item.nome,
+    motivo: motivoFinal,
+    status: "Aguardando Envio",
+    qtd: qtdSaida,
+    data: new Date().toLocaleDateString(),
+  });
+  localStorage.setItem("remessas", JSON.stringify(remessas));
+
+  exibirAviso(
+    `Sucesso! ${qtdSaida} unidade(s) enviada(s) para ${motivoFinal}.`,
+  );
+
+  fecharModalRemessaEstoque();
+  renderizarEstoque();
+  if (typeof atualizarDashboard === "function") {
+    atualizarDashboard();
+  }
 }
-
 
 // Função para Garantia, Conserto ou Devolução
 function abrirFluxoRemessa(index) {
@@ -121,9 +129,10 @@ function abrirFluxoRemessa(index) {
   const item = estoque[index];
 
   itemParaRemessa = { index: index, maxQtd: item.qtd };
-  
-  document.getElementById('modal-remessa-estoque-titulo').innerText = `Enviar "${item.nome}"`;
-  document.getElementById('input-qtd-remessa').setAttribute('max', item.qtd);
-  document.getElementById('input-qtd-remessa').value = 1;
-  document.getElementById('modal-remessa-estoque').style.display = 'block';
+
+  document.getElementById("modal-remessa-estoque-titulo").innerText =
+    `Enviar "${item.nome}"`;
+  document.getElementById("input-qtd-remessa").setAttribute("max", item.qtd);
+  document.getElementById("input-qtd-remessa").value = 1;
+  document.getElementById("modal-remessa-estoque").style.display = "block";
 }

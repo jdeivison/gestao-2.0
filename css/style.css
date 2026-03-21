@@ -268,12 +268,10 @@ section {
 
 /* Ajuste para o botão de filtro ativo */
 .btn-save.active {
-    background: linear-gradient(135deg, #1abc9c, #16a085);
-    box-shadow: 0 6px 15px rgba(22, 160, 133, 0.4);
-    transform: translateY(-2px);
+  background: linear-gradient(135deg, #1abc9c, #16a085);
+  box-shadow: 0 6px 15px rgba(22, 160, 133, 0.4);
+  transform: translateY(-2px);
 }
-
-
 
 /* MODIFICAÇÃO 2: Adicionei a classe .grid-form para colocar os itens lado a lado */
 .grid-form {
@@ -389,8 +387,8 @@ section {
   box-shadow: 0 6px 15px rgba(46, 204, 113, 0.3);
 }
 .btn-cancel {
-    background: #95a5a6;
-    box-shadow: 0 6px 15px rgba(149, 165, 166, 0.3);
+  background: #95a5a6;
+  box-shadow: 0 6px 15px rgba(149, 165, 166, 0.3);
 }
 
 .btn-save:hover,
@@ -413,37 +411,73 @@ section {
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(8px);
 }
+/* Container do Modal */
 .modal-content {
   background: var(--card-bg);
   margin: 5% auto;
   padding: 30px;
   border-radius: 25px;
   width: 450px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 50px var(--shadow);
 }
+
+/* Cabeçalho do Modal */
+/* 1. Garante que o cabeçalho jogue os itens para as pontas e os alinhe verticalmente */
+.modal-header {
+  display: flex;
+  justify-content: space-between; /* Texto pra esquerda, X pra direita */
+  align-items: center; /* Alinha verticalmente no centro */
+  margin-bottom: 25px; /* Espaço para o campo de filtro */
+}
+
+/* 2. Estiliza o botão de fechar (o X) */
+.modal-header .close {
+  font-size: 1.5rem; /* Aumenta o tamanho do X para ficar proporcional */
+  font-weight: 700; /* Deixa o traço um pouco mais grosso */
+  color: var(--text-sub); /* Use uma cor de texto secundária ou #ccc */
+  cursor: pointer;
+  transition: 0.2s;
+  line-height: 1; /* Evita que o tamanho do X altere a altura da linha */
+  display: flex; /* Ajuda no alinhamento central se necessário */
+  align-items: center;
+  justify-content: center;
+  width: 30px; /* Dá uma área de clique maior */
+  height: 30px;
+}
+
+/* 3. Efeito ao passar o mouse */
+.modal-header .close:hover {
+  color: var(--primary); /* Fica azul ao passar o mouse */
+  transform: scale(1.2); /* Dá um leve zoom */
+}
+/* Lista de Resultados (Samsung, Apple, etc) */
 #lista-resultados {
   padding: 0;
-  margin-top: 20px;
   list-style: none;
+  max-height: 400px; /* Adiciona rolagem se a lista for longa */
+  overflow-y: auto;
 }
+
 #lista-resultados li {
-  padding: 15px;
+  padding: 15px 20px;
   background: var(--input-bg);
   margin-bottom: 10px;
   border-radius: 12px;
   cursor: pointer;
-  transition: 0.3s;
-  border: 1px solid transparent;
   font-weight: 600;
-}
-#lista-resultados li:hover {
-  transform: translateX(10px);
-  border-color: var(--primary);
-  color: var(--primary);
-  background: var(--card-bg);
+  color: var(--text-main);
+  transition: all 0.2s ease;
+  border: 1px solid transparent;
 }
 
+/* Efeito ao passar o mouse na lista */
+#lista-resultados li:hover {
+  background: var(--card-bg);
+  border-color: var(--primary);
+  color: var(--primary);
+  transform: translateX(10px); /* Pequeno deslize para a direita */
+}
 /* TABELAS */
 .data-table {
   width: 100%;
@@ -486,12 +520,78 @@ section {
 }
 
 /* Centraliza os dados da tabela para ficarem alinhados com os títulos */
-.data-table th, .data-table td {
-    text-align: center;
-    padding: 15px;
+.data-table th,
+.data-table td {
+  text-align: center;
+  padding: 15px;
 }
 
 /* Garante que a descrição (que é texto longo) fique alinhada à esquerda */
 .data-table td:nth-child(2) {
-    text-align: left;
+  text-align: left;
+}
+
+/* Alinha a coluna de valor da tabela financeira à direita */
+#corpo-financeiro tr td:nth-child(3) {
+  text-align: right;
+}
+
+/* --- AJUSTE DA TABELA DE ESTOQUE --- */
+/* Garante alinhamento centralizado na tabela de estoque */
+#corpo-estoque td {
+  text-align: center;
+  padding: 15px;
+}
+
+/* Alinha o nome do item à esquerda (Coluna Item) */
+#corpo-estoque td:first-child {
+  text-align: left;
+}
+
+/* Centraliza os dados gerais das tabelas para ficarem alinhados com os títulos */
+.data-table th,
+.data-table td {
+  text-align: center;
+  padding: 15px;
+}
+
+/* --- Novo Design para o Botão de Ação na Tabela --- */
+
+/* Container do botão */
+.btn-acao-remessa {
+    background: transparent; /* Remove o fundo laranja */
+    border: 2px solid var(--border); /* Borda sutil */
+    color: var(--text-sub); /* Cor do ícone suave */
+    border-radius: 50%; /* Botão circular */
+    width: 38px;
+    height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0 auto; /* Centraliza na célula da tabela */
+    padding: 0;
+    font-size: 1.1rem;
+}
+
+/* Efeito ao passar o mouse (Hover) */
+.btn-acao-remessa:hover {
+    background: rgba(52, 152, 219, 0.1); /* Fundo azul bem suave */
+    border-color: var(--primary); /* Borda fica azul primária */
+    color: var(--primary); /* Ícone fica azul */
+    transform: scale(1.1); /* Leve aumento */
+    box-shadow: 0 0 10px rgba(52, 152, 219, 0.3); /* Brilho neon sutil */
+}
+
+/* Se você optou por usar o emoji de caminhão dentro do botão,
+   este estilo ajuda a alinhar e dar um toque profissional */
+.btn-acao-remessa .icon-truck::before {
+    content: '🚛'; /* Usando o emoji, mas estilizado pelo container */
+    filter: grayscale(100%); /* Deixa o emoji em tons de cinza por padrão */
+    transition: filter 0.3s ease;
+}
+
+.btn-acao-remessa:hover .icon-truck::before {
+    filter: grayscale(0%); /* Devolve a cor original do emoji no hover (opcional) */
 }
