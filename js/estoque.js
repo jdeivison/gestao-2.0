@@ -66,39 +66,64 @@ function renderizarEstoque() {
     .join("");
 }
 
+let itemParaRemessa = null; // Guarda o { index, maxQtd } do item
+
+function fecharModalRemessaEstoque() {
+    document.getElementById('modal-remessa-estoque').style.display = 'none';
+    itemParaRemessa = null;
+}
+
+function confirmarEnvioRemessa() {
+    if (!itemParaRemessa) return;
+
+    const motivo = document.getElementById('input-motivo-remessa').value;
+    const qtdSaida = parseInt(document.getElementById('input-qtd-remessa').value);
+    
+    if (!motivo || isNaN(qtdSaida) || qtdSaida <= 0 || qtdSaida > itemParaRemessa.maxQtd) {
+        return exibirAviso("Operação cancelada ou quantidade inválida.");
+    }
+
+    let estoque = JSON.parse(localStorage.getItem("estoque"));
+    const item = estoque[itemParaRemessa.index];
+
+    const motivosMap = { 1: "Garantia", 2: "Conserto", 3: "Devolução" };
+    const motivoFinal = motivosMap[motivo] || "Outros";
+
+    // 1. Diminuir do estoque
+    item.qtd -= qtdSaida;
+    if (item.qtd <= 0) estoque.splice(itemParaRemessa.index, 1); // Remove se zerar
+    localStorage.setItem("estoque", JSON.stringify(estoque));
+
+    // 2. Registrar na tabela de Remessas
+    let remessas = JSON.parse(localStorage.getItem("remessas")) || [];
+    remessas.push({
+        item: item.nome,
+        motivo: motivoFinal,
+        status: "Aguardando Envio",
+        qtd: qtdSaida,
+        data: new Date().toLocaleDateString(),
+    });
+    localStorage.setItem("remessas", JSON.stringify(remessas));
+
+    exibirAviso(`Sucesso! ${qtdSaida} unidade(s) enviada(s) para ${motivoFinal}.`);
+    
+    fecharModalRemessaEstoque();
+    renderizarEstoque();
+    if (typeof atualizarDashboard === 'function') {
+        atualizarDashboard();
+    }
+}
+
+
 // Função para Garantia, Conserto ou Devolução
 function abrirFluxoRemessa(index) {
   const estoque = JSON.parse(localStorage.getItem("estoque"));
   const item = estoque[index];
 
-  const motivo = prompt(
-    `Enviar "${item.nome}" para:\n1 - Garantia\n2 - Conserto\n3 - Devolução`,
-  );
-  const qtdSaida = parseInt(prompt(`Quantidade (Máximo ${item.qtd}):`, "1"));
-
-  if (!motivo || isNaN(qtdSaida) || qtdSaida > item.qtd)
-    return exibirAviso("Operação cancelada ou quantidade inválida.");
-
-  const motivosMap = { 1: "Garantia", 2: "Conserto", 3: "Devolução" };
-  const motivoFinal = motivosMap[motivo] || "Outros";
-
-  // 1. Diminuir do estoque
-  item.qtd -= qtdSaida;
-  if (item.qtd <= 0) estoque.splice(index, 1); // Remove se zerar
-  localStorage.setItem("estoque", JSON.stringify(estoque));
-
-  // 2. Registrar na tabela de Remessas
-  let remessas = JSON.parse(localStorage.getItem("remessas")) || [];
-  remessas.push({
-    item: item.nome,
-    motivo: motivoFinal,
-    status: "Aguardando Envio",
-    qtd: qtdSaida,
-    data: new Date().toLocaleDateString(),
-  });
-  localStorage.setItem("remessas", JSON.stringify(remessas));
-
-  exibirAviso(`Sucesso! ${qtdSaida} unidade(s) enviada(s) para ${motivoFinal}.`);
-  renderizarEstoque();
-  atualizarDashboard();
+  itemParaRemessa = { index: index, maxQtd: item.qtd };
+  
+  document.getElementById('modal-remessa-estoque-titulo').innerText = `Enviar "${item.nome}"`;
+  document.getElementById('input-qtd-remessa').setAttribute('max', item.qtd);
+  document.getElementById('input-qtd-remessa').value = 1;
+  document.getElementById('modal-remessa-estoque').style.display = 'block';
 }

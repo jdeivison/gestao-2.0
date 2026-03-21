@@ -181,11 +181,12 @@
                 <button
                   type="button"
                   id="btn-venda"
+                  class="btn"
                   onclick="converterEmVenda()"
                 >
                   🛒 Venda / Imprimir
                 </button>
-                <button type="submit" class="btn-save">💾 Salvar OS</button>
+                <button type="submit" class="btn btn-save">💾 Salvar OS</button>
               </div>
             </form>
           </section>
@@ -222,7 +223,7 @@
               <div class="input-group" style="justify-content: flex-end">
                 <button
                   onclick="adicionarEstoque()"
-                  class="btn-save"
+                  class="btn btn-save"
                   style="width: 100%; margin: 0"
                 >
                   📥 Registrar Entrada
@@ -315,7 +316,7 @@
                 <label>&nbsp;</label>
                 <button
                   onclick="registrarFinanceiroManual()"
-                  class="btn-save"
+                  class="btn btn-save"
                   style="margin: 0; width: 100%;"
                 >
                   Lançar
@@ -341,10 +342,10 @@
             <div class="section-header">
                 <h2>Garantia, Conserto e Remessas</h2>
                 <div class="filter-buttons">
-                    <button class="btn-save" onclick="filtrarRemessas(this, 'Todos')">Todos</button>
-                    <button class="btn-save" onclick="filtrarRemessas(this, 'Aguardando Envio')">Aguardando</button>
-                    <button class="btn-save" onclick="filtrarRemessas(this, 'Em Trânsito')">Em Trânsito</button>
-                    <button class="btn-save" onclick="filtrarRemessas(this, 'Concluído')">Concluídos</button>
+                    <button class="btn btn-save" onclick="filtrarRemessas(this, 'Todos')">Todos</button>
+                    <button class="btn btn-save" onclick="filtrarRemessas(this, 'Aguardando Envio')">Aguardando</button>
+                    <button class="btn btn-save" onclick="filtrarRemessas(this, 'Em Trânsito')">Em Trânsito</button>
+                    <button class="btn btn-save" onclick="filtrarRemessas(this, 'Concluído')">Concluídos</button>
                 </div>
             </div>
             <table class="data-table">
@@ -383,7 +384,54 @@
         <div class="modal-content" style="width: 350px; text-align: center;">
             <h3 id="modal-aviso-titulo">Aviso do Sistema</h3>
             <p id="modal-aviso-mensagem" style="margin: 20px 0;"></p>
-            <button class="btn-save" onclick="fecharAviso()" style="margin: 0 auto; min-width: 120px;">OK</button>
+            <button class="btn btn-save" onclick="fecharAviso()" style="margin: 0 auto; min-width: 120px;">OK</button>
+        </div>
+    </div>
+
+    <div id="modal-valor-venda" class="modal">
+        <div class="modal-content" style="width: 400px;">
+            <h3 id="modal-valor-titulo">Informar Valor da Venda</h3>
+            <div class="input-group" style="margin: 20px 0;">
+                <label>Valor Final (R$)</label>
+                <input type="number" id="input-valor-venda" class="input-box" placeholder="0.00" />
+            </div>
+            <div class="actions" style="justify-content: flex-end; padding-top: 10px; border-top: none;">
+                <button type="button" class="btn btn-cancel" onclick="fecharModalVenda()">Cancelar</button>
+                <button type="button" class="btn btn-save" onclick="confirmarVenda()">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-confirmacao-remessa" class="modal">
+        <div class="modal-content" style="width: 400px; text-align: center;">
+            <h3 id="modal-remessa-titulo">Retornar item ao estoque?</h3>
+            <p id="modal-remessa-mensagem" style="margin: 20px 0;"></p>
+            <div class="actions" style="justify-content: center; padding-top: 10px; border-top: none;">
+                <button type="button" class="btn btn-cancel" onclick="confirmarDevolucaoEstoque(false)">Não</button>
+                <button type="button" class="btn btn-save" onclick="confirmarDevolucaoEstoque(true)">Sim</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="modal-remessa-estoque" class="modal">
+        <div class="modal-content" style="width: 450px;">
+            <h3 id="modal-remessa-estoque-titulo">Enviar Item para Remessa</h3>
+            <div class="input-group" style="margin: 20px 0;">
+                <label>Motivo</label>
+                <select id="input-motivo-remessa" class="input-box">
+                    <option value="1">Garantia</option>
+                    <option value="2">Conserto</option>
+                    <option value="3">Devolução</option>
+                </select>
+            </div>
+            <div class="input-group" style="margin-bottom: 25px;">
+                <label>Quantidade a ser enviada</label>
+                <input type="number" id="input-qtd-remessa" class="input-box" placeholder="1" />
+            </div>
+            <div class="actions" style="justify-content: flex-end; padding-top: 10px; border-top: none;">
+                <button type="button" class="btn btn-cancel" onclick="fecharModalRemessaEstoque()">Cancelar</button>
+                <button type="button" class="btn btn-save" onclick="confirmarEnvioRemessa()">Confirmar</button>
+            </div>
         </div>
     </div>
 

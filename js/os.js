@@ -263,6 +263,39 @@ function filtrarRemessas(filtro) {
   renderizarRemessas(filtro);
 }
 
+let remessaParaDevolucao = null; // Guarda a remessa para a confirmação
+
+function confirmarDevolucaoEstoque(devolver) {
+    if (devolver && remessaParaDevolucao) {
+        let estoque = JSON.parse(localStorage.getItem("estoque")) || [];
+        const itemEstoque = estoque.find(
+            (e) => e.nome.toLowerCase() === remessaParaDevolucao.item.toLowerCase(),
+        );
+        if (itemEstoque) {
+            itemEstoque.qtd += remessaParaDevolucao.qtd;
+        } else {
+            estoque.push({
+                nome: remessaParaDevolucao.item,
+                qtd: remessaParaDevolucao.qtd,
+                custo: 0,
+                data: new Date().toLocaleDateString(),
+            });
+        }
+        localStorage.setItem("estoque", JSON.stringify(estoque));
+        exibirAviso(
+            `${remessaParaDevolucao.qtd} unidade(s) de "${remessaParaDevolucao.item}" retornaram ao estoque.`,
+        );
+        if (document.getElementById("estoque-section").style.display !== "none") {
+            renderizarEstoque();
+        }
+    }
+    
+    // Fecha o modal e limpa a variável
+    document.getElementById('modal-confirmacao-remessa').style.display = 'none';
+    remessaParaDevolucao = null;
+}
+
+
 function atualizarStatusRemessa(index, novoStatus) {
   let remessas = JSON.parse(localStorage.getItem("remessas")) || [];
   const remessa = remessas[index];
@@ -272,32 +305,9 @@ function atualizarStatusRemessa(index, novoStatus) {
   remessa.status = novoStatus;
 
   if (novoStatus === "Concluído") {
-    const devolver = confirm(
-      `O item "${remessa.item}" retornou. Deseja adicioná-lo de volta ao estoque?`,
-    );
-    if (devolver) {
-      let estoque = JSON.parse(localStorage.getItem("estoque")) || [];
-      const itemEstoque = estoque.find(
-        (e) => e.nome.toLowerCase() === remessa.item.toLowerCase(),
-      );
-      if (itemEstoque) {
-        itemEstoque.qtd += remessa.qtd;
-      } else {
-        estoque.push({
-          nome: remessa.item,
-          qtd: remessa.qtd,
-          custo: 0,
-          data: new Date().toLocaleDateString(),
-        });
-      }
-      localStorage.setItem("estoque", JSON.stringify(estoque));
-      exibirAviso(
-        `${remessa.qtd} unidade(s) de "${remessa.item}" retornaram ao estoque.`,
-      );
-      if (document.getElementById("estoque-section").style.display !== "none") {
-        renderizarEstoque();
-      }
-    }
+    remessaParaDevolucao = remessa; // Guarda a remessa
+    document.getElementById('modal-remessa-mensagem').innerText = `O item "${remessa.item}" retornou. Deseja adicioná-lo de volta ao estoque?`;
+    document.getElementById('modal-confirmacao-remessa').style.display = 'block';
   }
 
   localStorage.setItem("remessas", JSON.stringify(remessas));
