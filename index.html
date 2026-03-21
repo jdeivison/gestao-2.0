@@ -331,6 +331,7 @@
                   <th>Valor</th>
                   <th>Categoria</th>
                   <th>Status</th>
+                  <th>Ações</th>
                 </tr>
               </thead>
               <tbody id="corpo-financeiro"></tbody>
@@ -512,6 +513,17 @@
           >
             Confirmar
           </button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-confirmacao-generica" class="modal">
+      <div class="modal-content" style="width: 400px; text-align: center">
+        <h3 id="modal-confirmacao-titulo">Confirmar Ação</h3>
+        <p id="modal-confirmacao-mensagem" style="margin: 20px 0"></p>
+        <div class="actions" style="justify-content: center; padding-top: 10px; border-top: none">
+          <button type="button" class="btn btn-cancel" id="btn-confirmacao-nao">Não</button>
+          <button type="button" class="btn btn-save" id="btn-confirmacao-sim">Sim</button>
         </div>
       </div>
     </div>

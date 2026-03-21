@@ -2,6 +2,7 @@
   --primary: #3498db;
   --success: #2ecc71;
   --warning: #f39c12;
+  --danger: #e74c3c;
   --dark-sidebar: #1a252f;
   --bg-color: #f0f2f5;
   --card-bg: #ffffff;
@@ -514,48 +515,61 @@ section {
   width: 100%;
 }
 
-/* Alinha a coluna de valor da tabela financeira à direita */
-#corpo-financeiro tr td:nth-child(3) {
-  text-align: right;
-}
-
-/* Centraliza os dados da tabela para ficarem alinhados com os títulos */
+/* --- ALINHAMENTO GERAL DAS TABELAS --- */
+/* Por padrão, centraliza tudo para um look limpo */
 .data-table th,
 .data-table td {
   text-align: center;
+  vertical-align: middle; /* Garante alinhamento vertical */
   padding: 15px;
 }
 
-/* Garante que a descrição (que é texto longo) fique alinhada à esquerda */
-.data-table td:nth-child(2) {
+/* --- ALINHAMENTOS ESPECÍFICOS --- */
+
+/* Tabela Estoque: Item à Esquerda, Custo à Direita */
+#estoque-section .data-table th:first-child,
+#estoque-section .data-table td:first-child {
   text-align: left;
 }
-
-/* Alinha a coluna de valor da tabela financeira à direita */
-#corpo-financeiro tr td:nth-child(3) {
-  text-align: right;
+#estoque-section .data-table th:nth-child(3),
+#estoque-section .data-table td:nth-child(3) {
+    text-align: right;
 }
 
-/* --- AJUSTE DA TABELA DE ESTOQUE --- */
-/* Garante alinhamento centralizado na tabela de estoque */
-#corpo-estoque td {
-  text-align: center;
-  padding: 15px;
+/* Tabela Remessas: Item/SN à Esquerda */
+#remessa-section .data-table th:first-child,
+#remessa-section .data-table td:first-child {
+    text-align: left;
 }
 
-/* Alinha o nome do item à esquerda (Coluna Item) */
-#corpo-estoque td:first-child {
-  text-align: left;
+/* --- Botões de Ação nas Tabelas --- */
+#financeiro-section .data-table td:last-child {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
 }
 
-/* Centraliza os dados gerais das tabelas para ficarem alinhados com os títulos */
-.data-table th,
-.data-table td {
-  text-align: center;
-  padding: 15px;
+.btn-acao {
+    border: none;
+    border-radius: 8px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin: 0; /* Margin é agora controlada pelo gap do flex container */
+    transition: transform 0.2s;
 }
-
-/* --- Novo Design para o Botão de Ação na Tabela --- */
+.btn-acao:hover {
+    transform: scale(1.1);
+}
+.btn-edit {
+    background: var(--warning);
+    color: white;
+}
+.btn-delete {
+    background: var(--danger);
+    color: white;
+}
 
 /* Container do botão */
 .btn-acao-remessa {

@@ -197,7 +197,7 @@ function registrarFinanceiroManual() {
 
 function salvarNoFinanceiro(desc, valor, tipo) {
   let financeiro = JSON.parse(localStorage.getItem("financeiro_dados")) || [];
-  financeiro.push({ desc, valor, tipo, data: new Date().toLocaleDateString() });
+  financeiro.push({ id: Date.now(), desc, valor, tipo, data: new Date().toLocaleDateString() });
   localStorage.setItem("financeiro_dados", JSON.stringify(financeiro));
   renderizarFinanceiro();
   atualizarDashboard();
@@ -211,13 +211,68 @@ function renderizarFinanceiro() {
         `<tr>
           <td>${f.data}</td>
           <td>${f.desc}</td>
-          <td class="${f.tipo === "Entrada" ? "valor-entrada" : "valor-saida"}">R$ ${f.valor.toFixed(2)}</td>
+          <td class="${f.tipo === "Entrada" ? "valor-entrada" : "valor-saida"}">R$ ${parseFloat(f.valor).toFixed(2)}</td>
           <td>${f.tipo}</td>
           <td>${f.tipo === "Entrada" ? "Pago" : "A pagar"}</td>
+          <td>
+            <button class="btn-acao btn-edit" onclick="editarLancamento(${f.id})">✏️</button>
+            <button class="btn-acao btn-delete" onclick="excluirLancamento(${f.id})">🗑️</button>
+          </td>
         </tr>`,
     )
     .join("");
 }
+
+function exibirConfirmacao(titulo, mensagem, callbackSim) {
+  document.getElementById('modal-confirmacao-titulo').innerText = titulo;
+  document.getElementById('modal-confirmacao-mensagem').innerText = mensagem;
+  const modal = document.getElementById('modal-confirmacao-generica');
+  modal.style.display = 'block';
+
+  const btnSim = document.getElementById('btn-confirmacao-sim');
+  const btnNao = document.getElementById('btn-confirmacao-nao');
+
+  // Função para fechar o modal e remover os listeners
+  const cleanup = () => {
+    modal.style.display = 'none';
+    btnSim.removeEventListener('click', simHandler);
+    btnNao.removeEventListener('click', naoHandler);
+  };
+
+  const simHandler = () => {
+    if (callbackSim) callbackSim();
+    cleanup();
+  };
+
+  const naoHandler = () => {
+    cleanup();
+  };
+
+  // Adiciona os event listeners
+  btnSim.addEventListener('click', simHandler);
+  btnNao.addEventListener('click', naoHandler);
+}
+
+function editarLancamento(id) {
+  exibirAviso(`Editar lançamento ID: ${id}. Funcionalidade a ser implementada.`);
+  // Futuro: Abrir um modal com os dados de 'f' para edição.
+}
+
+function excluirLancamento(id) {
+  exibirConfirmacao(
+    'Excluir Lançamento',
+    'Tem certeza que deseja excluir este lançamento?',
+    () => {
+      let financeiro = JSON.parse(localStorage.getItem("financeiro_dados")) || [];
+      financeiro = financeiro.filter(f => f.id !== id);
+      localStorage.setItem("financeiro_dados", JSON.stringify(financeiro));
+      renderizarFinanceiro();
+      atualizarDashboard();
+      exibirAviso('Lançamento excluído com sucesso!');
+    }
+  );
+}
+
 
 let filtroAtualRemessas = "Todos";
 
