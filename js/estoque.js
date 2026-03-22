@@ -12,6 +12,8 @@ function fecharAviso() {
 // Adicionar item ao estoque com custo
 function adicionarEstoque() {
   const nome = document.getElementById("est-nome").value;
+  const marca = document.getElementById("est-marca").value || "";
+  const serie = document.getElementById("est-serie").value || "";
   const qtd = parseInt(document.getElementById("est-qtd").value);
   const custo = parseFloat(document.getElementById("est-custo").value) || 0;
 
@@ -19,22 +21,34 @@ function adicionarEstoque() {
 
   let estoque = JSON.parse(localStorage.getItem("estoque")) || [];
 
-  // Verifica se o item já existe para somar a quantidade
+  // Verifica se o item já existe (considerando nome, marca e série)
   const index = estoque.findIndex(
-    (item) => item.nome.toLowerCase() === nome.toLowerCase(),
+    (item) =>
+      item.nome.toLowerCase() === nome.toLowerCase() &&
+      (item.marca || "").toLowerCase() === marca.toLowerCase() &&
+      (item.serie || "").toLowerCase() === serie.toLowerCase()
   );
 
   if (index !== -1) {
     estoque[index].qtd += qtd;
     estoque[index].data = new Date().toLocaleDateString();
   } else {
-    estoque.push({ nome, qtd, custo, data: new Date().toLocaleDateString() });
+    estoque.push({
+      nome,
+      marca,
+      serie,
+      qtd,
+      custo,
+      data: new Date().toLocaleDateString(),
+    });
   }
 
   localStorage.setItem("estoque", JSON.stringify(estoque));
 
   // Limpar campos
   document.getElementById("est-nome").value = "";
+  document.getElementById("est-marca").value = "";
+  document.getElementById("est-serie").value = "";
   document.getElementById("est-qtd").value = "";
   document.getElementById("est-custo").value = "";
 
@@ -51,13 +65,11 @@ function renderizarEstoque() {
       (i, index) => `
         <tr>
             <td><strong>${i.nome}</strong></td>
-            
+            <td>${i.marca || ""}</td>
+            <td>${i.serie || ""}</td>
             <td>${i.qtd} un</td>
-            
             <td>R$ ${parseFloat(i.custo).toFixed(2)}</td>
-            
             <td>${i.data}</td>
-            
             <td>
                 <button title="Enviar para Garantia/Conserto" class="btn-acao-remessa" 
             onclick="abrirFluxoRemessa(${index})">
@@ -104,7 +116,8 @@ function confirmarEnvioRemessa() {
   // 2. Registrar na tabela de Remessas
   let remessas = JSON.parse(localStorage.getItem("remessas")) || [];
   remessas.push({
-    item: item.nome,
+    item: `${item.nome} ${item.marca}`,
+    sn: item.serie,
     motivo: motivoFinal,
     status: "Aguardando Envio",
     qtd: qtdSaida,

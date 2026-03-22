@@ -470,6 +470,7 @@ function renderizarRemessas(filtro = "Todos") {
 
       return `<tr>
                   <td>${r.item}</td>
+                  <td>${r.sn || ""}</td>
                   <td>${r.qtd}</td>
                   <td><span class="badge">${r.motivo}</span></td>
                   <td>${r.status}</td>
@@ -497,6 +498,8 @@ function confirmarDevolucaoEstoque(devolver) {
         } else {
             estoque.push({
                 nome: remessaParaDevolucao.item,
+                marca: "",
+                serie: remessaParaDevolucao.sn || "",
                 qtd: remessaParaDevolucao.qtd,
                 custo: 0,
                 data: new Date().toLocaleDateString(),
