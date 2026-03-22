@@ -9,7 +9,9 @@ function fecharAviso() {
 }
 // ------------------------------------
 
-// Adicionar item ao estoque com custo
+let estoqueEmEdicao = null; // Rastreia o item em edição
+
+// Adicionar ou ATUALIZAR item no estoque
 function adicionarEstoque() {
   const nome = document.getElementById("est-nome").value;
   const marca = document.getElementById("est-marca").value || "";
@@ -21,41 +23,55 @@ function adicionarEstoque() {
 
   let estoque = JSON.parse(localStorage.getItem("estoque")) || [];
 
-  // Verifica se o item já existe (considerando nome, marca e série)
-  const index = estoque.findIndex(
-    (item) =>
-      item.nome.toLowerCase() === nome.toLowerCase() &&
-      (item.marca || "").toLowerCase() === marca.toLowerCase() &&
-      (item.serie || "").toLowerCase() === serie.toLowerCase()
-  );
+  const itemData = {
+    nome,
+    marca,
+    serie,
+    qtd,
+    custo,
+    data: new Date().toLocaleDateString(),
+  };
 
-  if (index !== -1) {
-    estoque[index].qtd += qtd;
-    estoque[index].data = new Date().toLocaleDateString();
+  if (estoqueEmEdicao !== null) {
+    // Atualiza o item existente
+    estoque[estoqueEmEdicao] = itemData;
+    exibirAviso("✅ Item atualizado com sucesso!");
   } else {
-    estoque.push({
-      nome,
-      marca,
-      serie,
-      qtd,
-      custo,
-      data: new Date().toLocaleDateString(),
-    });
+    // Adiciona novo item
+    const index = estoque.findIndex(
+      (item) =>
+        item.nome.toLowerCase() === nome.toLowerCase() &&
+        (item.marca || "").toLowerCase() === marca.toLowerCase() &&
+        (item.serie || "").toLowerCase() === serie.toLowerCase()
+    );
+
+    if (index !== -1) {
+      estoque[index].qtd += qtd;
+      estoque[index].data = new Date().toLocaleDateString();
+    } else {
+      estoque.push(itemData);
+    }
+    exibirAviso("✅ Item adicionado ao estoque!");
   }
 
   localStorage.setItem("estoque", JSON.stringify(estoque));
 
-  // Limpar campos
+  // Limpa campos e reseta estado
   document.getElementById("est-nome").value = "";
   document.getElementById("est-marca").value = "";
   document.getElementById("est-serie").value = "";
   document.getElementById("est-qtd").value = "";
   document.getElementById("est-custo").value = "";
+  estoqueEmEdicao = null;
+  
+  // Restaura o botão para o estado original
+  const btn = document.querySelector("#estoque-section .btn-save");
+  btn.innerText = "📥 Registrar Entrada";
+  btn.onclick = adicionarEstoque;
 
   renderizarEstoque();
 }
 
-// Renderizar com botão de Remessa (Garantia/Conserto)
 function renderizarEstoque() {
   const lista = JSON.parse(localStorage.getItem("estoque")) || [];
   const corpo = document.getElementById("corpo-estoque");
@@ -71,81 +87,48 @@ function renderizarEstoque() {
             <td>R$ ${parseFloat(i.custo).toFixed(2)}</td>
             <td>${i.data}</td>
             <td>
-                <button title="Enviar para Garantia/Conserto" class="btn-acao-remessa" 
-            onclick="abrirFluxoRemessa(${index})">
-        <i class="icon-truck"></i> </button>
+                <button title="Editar" class="btn-acao btn-edit" onclick="editarEstoque(${index})">✏️</button>
+                <button title="Excluir" class="btn-acao btn-delete" onclick="excluirEstoque(${index})">🗑️</button>
             </td>
         </tr>
     `,
     )
     .join("");
 }
-let itemParaRemessa = null; // Guarda o { index, maxQtd } do item
 
-function fecharModalRemessaEstoque() {
-  document.getElementById("modal-remessa-estoque").style.display = "none";
-  itemParaRemessa = null;
-}
-
-function confirmarEnvioRemessa() {
-  if (!itemParaRemessa) return;
-
-  const motivo = document.getElementById("input-motivo-remessa").value;
-  const qtdSaida = parseInt(document.getElementById("input-qtd-remessa").value);
-
-  if (
-    !motivo ||
-    isNaN(qtdSaida) ||
-    qtdSaida <= 0 ||
-    qtdSaida > itemParaRemessa.maxQtd
-  ) {
-    return exibirAviso("Operação cancelada ou quantidade inválida.");
-  }
-
-  let estoque = JSON.parse(localStorage.getItem("estoque"));
-  const item = estoque[itemParaRemessa.index];
-
-  const motivosMap = { 1: "Garantia", 2: "Conserto", 3: "Devolução" };
-  const motivoFinal = motivosMap[motivo] || "Outros";
-
-  // 1. Diminuir do estoque
-  item.qtd -= qtdSaida;
-  if (item.qtd <= 0) estoque.splice(itemParaRemessa.index, 1); // Remove se zerar
-  localStorage.setItem("estoque", JSON.stringify(estoque));
-
-  // 2. Registrar na tabela de Remessas
-  let remessas = JSON.parse(localStorage.getItem("remessas")) || [];
-  remessas.push({
-    item: `${item.nome} ${item.marca}`,
-    sn: item.serie,
-    motivo: motivoFinal,
-    status: "Aguardando Envio",
-    qtd: qtdSaida,
-    data: new Date().toLocaleDateString(),
-  });
-  localStorage.setItem("remessas", JSON.stringify(remessas));
-
-  exibirAviso(
-    `Sucesso! ${qtdSaida} unidade(s) enviada(s) para ${motivoFinal}.`,
-  );
-
-  fecharModalRemessaEstoque();
-  renderizarEstoque();
-  if (typeof atualizarDashboard === "function") {
-    atualizarDashboard();
-  }
-}
-
-// Função para Garantia, Conserto ou Devolução
-function abrirFluxoRemessa(index) {
-  const estoque = JSON.parse(localStorage.getItem("estoque"));
+function editarEstoque(index) {
+  let estoque = JSON.parse(localStorage.getItem("estoque")) || [];
   const item = estoque[index];
+  if (!item) return;
 
-  itemParaRemessa = { index: index, maxQtd: item.qtd };
+  estoqueEmEdicao = index;
 
-  document.getElementById("modal-remessa-estoque-titulo").innerText =
-    `Enviar "${item.nome}"`;
-  document.getElementById("input-qtd-remessa").setAttribute("max", item.qtd);
-  document.getElementById("input-qtd-remessa").value = 1;
-  document.getElementById("modal-remessa-estoque").style.display = "block";
+  document.getElementById("est-nome").value = item.nome;
+  document.getElementById("est-marca").value = item.marca;
+  document.getElementById("est-serie").value = item.serie;
+  document.getElementById("est-qtd").value = item.qtd;
+  document.getElementById("est-custo").value = item.custo;
+
+  const btn = document.querySelector("#estoque-section .btn-save");
+  btn.innerText = "💾 Atualizar Item";
+  
+  document.getElementById('est-nome').focus();
 }
+
+function excluirEstoque(index) {
+  // A função exibirConfirmacao está em os.js, precisa estar disponível globalmente
+   exibirConfirmacao(
+    'Excluir Item do Estoque',
+    'Tem certeza que deseja excluir este item?',
+    () => {
+      let estoque = JSON.parse(localStorage.getItem("estoque")) || [];
+      estoque.splice(index, 1);
+      localStorage.setItem("estoque", JSON.stringify(estoque));
+      renderizarEstoque();
+      exibirAviso('Item excluído do estoque com sucesso!');
+    }
+  );
+}
+
+
+

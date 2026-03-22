@@ -571,9 +571,27 @@ section {
     background: var(--warning);
     color: white;
 }
+
+.btn-edit:hover {
+    background: #f1c40f;
+}
+
 .btn-delete {
     background: var(--danger);
     color: white;
+}
+
+.btn-delete:hover {
+    background: #c0392b;
+}
+
+.btn-send {
+    background: var(--primary);
+    color: white;
+}
+
+.btn-send:hover {
+    background: #2980b9;
 }
 
 /* Container do botão */

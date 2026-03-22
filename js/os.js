@@ -481,9 +481,18 @@ function renderizarRemessas(filtro = "Todos") {
     .join("");
 }
 
-function filtrarRemessas(filtro) {
+function filtrarRemessas(filtro, element) {
+  const buttons = document.querySelectorAll('.filter-buttons .btn-save');
+  buttons.forEach(button => {
+      button.classList.remove('active');
+  });
+  if (element) {
+    element.classList.add('active');
+  }
   renderizarRemessas(filtro);
 }
+
+
 
 let remessaParaDevolucao = null; // Guarda a remessa para a confirmação
 
