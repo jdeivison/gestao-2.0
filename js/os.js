@@ -126,17 +126,22 @@ function abrirModalListaOS() {
           <th>Modelo</th>
           <th>N° de Série</th>
           <th>Data</th>
+          <th>Ações</th>
         </tr>
       </thead>
       <tbody>`;
     
-    ordens.forEach(os => {
+    ordens.forEach((os, index) => {
       tabelaHTML += `
         <tr>
           <td>${os.marca}</td>
           <td>${os.modelo}</td>
           <td>${os.serie}</td>
           <td>${os.dataCadastro}</td>
+          <td>
+            <button class="btn-acao btn-edit" onclick="editarOS(${index})">✏️</button>
+            <button class="btn-acao btn-delete" onclick="excluirOS(${index})">🗑️</button>
+          </td>
         </tr>`;
     });
 
@@ -149,6 +154,25 @@ function abrirModalListaOS() {
 
 function fecharModalListaOS() {
   document.getElementById("modal-lista-os").style.display = "none";
+}
+
+function editarOS(index) {
+  exibirAviso(`Editar OS ID: ${index}. Funcionalidade a ser implementada.`);
+}
+
+function excluirOS(index) {
+    exibirConfirmacao(
+    'Excluir Ordem de Serviço',
+    'Tem certeza que deseja excluir esta Ordem de Serviço?',
+    () => {
+      let ordens = JSON.parse(localStorage.getItem("meu_sistema_os")) || [];
+      ordens.splice(index, 1);
+      localStorage.setItem("meu_sistema_os", JSON.stringify(ordens));
+      abrirModalListaOS(); // Atualiza a lista no modal
+      atualizarDashboard();
+      exibirAviso('Ordem de Serviço excluída com sucesso!');
+    }
+  );
 }
 
 function filtrarBusca() {
