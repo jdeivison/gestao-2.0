@@ -30,7 +30,7 @@ const bancoDadosFake = {
   historicoServicos: [],
 };
 
-let pecasUsadasNestaOS = [];
+
 let osEmEdicao = null; // Variável para rastrear a OS em edição
 
 function toggleTheme() {
@@ -62,7 +62,7 @@ function showSection(sectionId) {
   // Salva a última seção ativa no localStorage
   localStorage.setItem("last_active_section", sectionId);
 
-  if (sectionId === "os-section") popularSelecaoDePecas();
+
   if (sectionId === "financeiro-section") renderizarFinanceiro();
   if (sectionId === "estoque-section") renderizarEstoque();
   if (sectionId === "remessa-section") renderizarRemessas();
@@ -173,9 +173,7 @@ function editarOS(index) {
   document.getElementById("etiqueta").value = os.etiqueta;
   document.getElementById("inventario").value = os.inventario;
 
-  // Carrega as peças da OS que está sendo editada
-  pecasUsadasNestaOS = os.pecas || [];
-  renderizarPecasDaOS();
+
   
   showSection('os-section'); // Mostra a seção do formulário
   fecharModalListaOS(); // Fecha o modal da lista
@@ -213,53 +211,7 @@ function filtrarBusca() {
   );
 }
 
-function popularSelecaoDePecas() {
-    const estoque = JSON.parse(localStorage.getItem("estoque")) || [];
-    const select = document.getElementById("peca-select");
-    select.innerHTML = '<option value="">Selecione uma peça</option>';
-    estoque.forEach(item => {
-        if (item.qtd > 0) {
-            select.innerHTML += `<option value="${item.nome}">${item.nome} (${item.qtd} un.)</option>`;
-        }
-    });
-}
 
-function adicionarPecaNaOS() {
-    const pecaSelecionada = document.getElementById("peca-select").value;
-    const quantidade = parseInt(document.getElementById("peca-qtd").value);
-    
-    if (!pecaSelecionada) return exibirAviso("Selecione uma peça.");
-    if (isNaN(quantidade) || quantidade <= 0) return exibirAviso("Quantidade inválida.");
-
-    const estoque = JSON.parse(localStorage.getItem("estoque")) || [];
-    const itemEstoque = estoque.find(item => item.nome === pecaSelecionada);
-
-    if (!itemEstoque) return exibirAviso("Peça não encontrada no estoque.");
-    if (itemEstoque.qtd < quantidade) return exibirAviso(`Estoque insuficiente. Disponível: ${itemEstoque.qtd}`);
-
-    const pecaExistente = pecasUsadasNestaOS.find(p => p.nome === pecaSelecionada);
-    if (pecaExistente) {
-        pecaExistente.qtd += quantidade;
-    } else {
-        pecasUsadasNestaOS.push({ nome: pecaSelecionada, qtd: quantidade });
-    }
-    
-    renderizarPecasDaOS();
-}
-
-function renderizarPecasDaOS() {
-    const container = document.getElementById("pecas-adicionadas");
-    container.innerHTML = '<ul>';
-    pecasUsadasNestaOS.forEach((peca, index) => {
-        container.innerHTML += `<li>${peca.qtd}x ${peca.nome} <button onclick="removerPecaDaOS(${index})">❌</button></li>`;
-    });
-    container.innerHTML += '</ul>';
-}
-
-function removerPecaDaOS(index) {
-    pecasUsadasNestaOS.splice(index, 1);
-    renderizarPecasDaOS();
-}
 
 
 function salvarOS(event) {
@@ -273,7 +225,6 @@ function salvarOS(event) {
     etiqueta: document.getElementById("etiqueta").value,
     inventario: document.getElementById("inventario").value,
     dataCadastro: new Date().toLocaleDateString(),
-    pecas: pecasUsadasNestaOS,
   };
   if (!osData.serie) return exibirAviso("Série Obrigatória!");
 
@@ -295,8 +246,6 @@ function salvarOS(event) {
   // Resetar estado de edição e formulário
   osEmEdicao = null;
   document.getElementById("os-form").reset();
-  pecasUsadasNestaOS = [];
-  renderizarPecasDaOS();
   
   // Resetar a UI para o estado de criação
   document.querySelector("#os-section h2").innerText = "Abertura de Ordem de Serviço";
