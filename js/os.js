@@ -31,6 +31,7 @@ const bancoDadosFake = {
 };
 
 let pecasUsadasNestaOS = [];
+let osEmEdicao = null; // Variável para rastrear a OS em edição
 
 function toggleTheme() {
   const isDark = document.body.classList.toggle("dark-mode");
@@ -157,7 +158,31 @@ function fecharModalListaOS() {
 }
 
 function editarOS(index) {
-  exibirAviso(`Editar OS ID: ${index}. Funcionalidade a ser implementada.`);
+  const ordens = JSON.parse(localStorage.getItem("meu_sistema_os")) || [];
+  const os = ordens[index];
+  if (!os) return exibirAviso("Ordem de serviço não encontrada!");
+
+  osEmEdicao = index; // Define o índice da OS que está sendo editada
+
+  // Preenche o formulário com os dados da OS
+  document.getElementById("marca").value = os.marca;
+  document.getElementById("modelo").value = os.modelo;
+  document.getElementById("serie").value = os.serie;
+  document.getElementById("documento-cliente").value = os.documento;
+  document.getElementById("lacre").value = os.lacre;
+  document.getElementById("etiqueta").value = os.etiqueta;
+  document.getElementById("inventario").value = os.inventario;
+
+  // Carrega as peças da OS que está sendo editada
+  pecasUsadasNestaOS = os.pecas || [];
+  renderizarPecasDaOS();
+  
+  showSection('os-section'); // Mostra a seção do formulário
+  fecharModalListaOS(); // Fecha o modal da lista
+  
+  // Altera o título da seção e o texto do botão para indicar edição
+  document.querySelector("#os-section h2").innerText = "Editando Ordem de Serviço";
+  document.querySelector("#os-form .btn-save").innerText = "💾 Atualizar OS";
 }
 
 function excluirOS(index) {
@@ -239,7 +264,7 @@ function removerPecaDaOS(index) {
 
 function salvarOS(event) {
   event.preventDefault();
-  const novaOS = {
+  const osData = {
     marca: document.getElementById("marca").value,
     modelo: document.getElementById("modelo").value,
     serie: document.getElementById("serie").value,
@@ -250,29 +275,33 @@ function salvarOS(event) {
     dataCadastro: new Date().toLocaleDateString(),
     pecas: pecasUsadasNestaOS,
   };
-  if (!novaOS.serie) return exibirAviso("Série Obrigatória!");
-
-  // Baixa no estoque
-  let estoque = JSON.parse(localStorage.getItem("estoque")) || [];
-  pecasUsadasNestaOS.forEach(peca => {
-      const itemEstoque = estoque.find(e => e.nome === peca.nome);
-      if (itemEstoque) {
-          itemEstoque.qtd -= peca.qtd;
-      }
-  });
-  localStorage.setItem("estoque", JSON.stringify(estoque.filter(e => e.qtd > 0)));
-
+  if (!osData.serie) return exibirAviso("Série Obrigatória!");
 
   let historico = JSON.parse(localStorage.getItem("meu_sistema_os")) || [];
-  historico.push(novaOS);
+
+  if (osEmEdicao !== null) {
+    // Modo de Edição
+    historico[osEmEdicao] = osData;
+    exibirAviso("✅ OS Atualizada com sucesso!");
+  } else {
+    // Modo de Criação
+    historico.push(osData);
+    exibirAviso("✅ OS Salva com sucesso!");
+  }
+
   localStorage.setItem("meu_sistema_os", JSON.stringify(historico));
-  bancoDadosFake.historicoServicos.push(novaOS);
+  bancoDadosFake.historicoServicos = historico; // Atualiza o banco de dados fake
   
-  exibirAviso("✅ OS Salva com sucesso e estoque atualizado!");
-  
+  // Resetar estado de edição e formulário
+  osEmEdicao = null;
   document.getElementById("os-form").reset();
   pecasUsadasNestaOS = [];
   renderizarPecasDaOS();
+  
+  // Resetar a UI para o estado de criação
+  document.querySelector("#os-section h2").innerText = "Abertura de Ordem de Serviço";
+  document.querySelector("#os-form .btn-save").innerText = "💾 Salvar OS";
+  
   atualizarDashboard();
   if (document.getElementById('estoque-section').style.display !== 'none') {
     renderizarEstoque();
