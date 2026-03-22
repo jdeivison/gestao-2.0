@@ -30,6 +30,8 @@ const bancoDadosFake = {
   historicoServicos: [],
 };
 
+let pecasUsadasNestaOS = [];
+
 function toggleTheme() {
   const isDark = document.body.classList.toggle("dark-mode");
   localStorage.setItem("tema_preferido", isDark ? "dark" : "light");
@@ -59,6 +61,7 @@ function showSection(sectionId) {
   // Salva a última seção ativa no localStorage
   localStorage.setItem("last_active_section", sectionId);
 
+  if (sectionId === "os-section") popularSelecaoDePecas();
   if (sectionId === "financeiro-section") renderizarFinanceiro();
   if (sectionId === "estoque-section") renderizarEstoque();
   if (sectionId === "remessa-section") renderizarRemessas();
@@ -120,6 +123,55 @@ function filtrarBusca() {
   );
 }
 
+function popularSelecaoDePecas() {
+    const estoque = JSON.parse(localStorage.getItem("estoque")) || [];
+    const select = document.getElementById("peca-select");
+    select.innerHTML = '<option value="">Selecione uma peça</option>';
+    estoque.forEach(item => {
+        if (item.qtd > 0) {
+            select.innerHTML += `<option value="${item.nome}">${item.nome} (${item.qtd} un.)</option>`;
+        }
+    });
+}
+
+function adicionarPecaNaOS() {
+    const pecaSelecionada = document.getElementById("peca-select").value;
+    const quantidade = parseInt(document.getElementById("peca-qtd").value);
+    
+    if (!pecaSelecionada) return exibirAviso("Selecione uma peça.");
+    if (isNaN(quantidade) || quantidade <= 0) return exibirAviso("Quantidade inválida.");
+
+    const estoque = JSON.parse(localStorage.getItem("estoque")) || [];
+    const itemEstoque = estoque.find(item => item.nome === pecaSelecionada);
+
+    if (!itemEstoque) return exibirAviso("Peça não encontrada no estoque.");
+    if (itemEstoque.qtd < quantidade) return exibirAviso(`Estoque insuficiente. Disponível: ${itemEstoque.qtd}`);
+
+    const pecaExistente = pecasUsadasNestaOS.find(p => p.nome === pecaSelecionada);
+    if (pecaExistente) {
+        pecaExistente.qtd += quantidade;
+    } else {
+        pecasUsadasNestaOS.push({ nome: pecaSelecionada, qtd: quantidade });
+    }
+    
+    renderizarPecasDaOS();
+}
+
+function renderizarPecasDaOS() {
+    const container = document.getElementById("pecas-adicionadas");
+    container.innerHTML = '<ul>';
+    pecasUsadasNestaOS.forEach((peca, index) => {
+        container.innerHTML += `<li>${peca.qtd}x ${peca.nome} <button onclick="removerPecaDaOS(${index})">❌</button></li>`;
+    });
+    container.innerHTML += '</ul>';
+}
+
+function removerPecaDaOS(index) {
+    pecasUsadasNestaOS.splice(index, 1);
+    renderizarPecasDaOS();
+}
+
+
 function salvarOS(event) {
   event.preventDefault();
   const novaOS = {
@@ -131,15 +183,35 @@ function salvarOS(event) {
     etiqueta: document.getElementById("etiqueta").value,
     inventario: document.getElementById("inventario").value,
     dataCadastro: new Date().toLocaleDateString(),
+    pecas: pecasUsadasNestaOS,
   };
   if (!novaOS.serie) return exibirAviso("Série Obrigatória!");
+
+  // Baixa no estoque
+  let estoque = JSON.parse(localStorage.getItem("estoque")) || [];
+  pecasUsadasNestaOS.forEach(peca => {
+      const itemEstoque = estoque.find(e => e.nome === peca.nome);
+      if (itemEstoque) {
+          itemEstoque.qtd -= peca.qtd;
+      }
+  });
+  localStorage.setItem("estoque", JSON.stringify(estoque.filter(e => e.qtd > 0)));
+
+
   let historico = JSON.parse(localStorage.getItem("meu_sistema_os")) || [];
   historico.push(novaOS);
   localStorage.setItem("meu_sistema_os", JSON.stringify(historico));
   bancoDadosFake.historicoServicos.push(novaOS);
-  exibirAviso("✅ OS Salva!");
+  
+  exibirAviso("✅ OS Salva com sucesso e estoque atualizado!");
+  
   document.getElementById("os-form").reset();
+  pecasUsadasNestaOS = [];
+  renderizarPecasDaOS();
   atualizarDashboard();
+  if (document.getElementById('estoque-section').style.display !== 'none') {
+    renderizarEstoque();
+  }
 }
 
 function atualizarDashboard() {
