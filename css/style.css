@@ -432,6 +432,16 @@ section {
 #modal-lista-os .modal-content {
   width: 80%;
   max-width: 900px;
+  display: flex;
+  flex-direction: column;
+  max-height: 80vh;
+}
+
+.modal-footer {
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    justify-content: flex-end;
 }
 
 /* Cabeçalho do Modal */
