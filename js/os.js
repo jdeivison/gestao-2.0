@@ -71,41 +71,53 @@ function showSection(sectionId) {
 
 let tipoBuscaAtivo = "";
 function buscarHistorico(tipo) {
-  tipoBuscaAtivo = tipo;
+  tipoBuscaAtivo = tipo; // 'marca' ou 'modelo'
   const modal = document.getElementById("modal-busca");
   const lista = document.getElementById("lista-resultados");
-  document.getElementById("modal-titulo").innerText =
-    `Buscar ${tipo.toUpperCase()}`;
-  lista.innerHTML = "";
-  modal.style.display = "block";
+  const tituloModal = document.getElementById("modal-titulo");
 
-  let dados =
-    tipo === "marca"
-      ? bancoDadosFake.marcas
-      : tipo === "modelo"
-        ? bancoDadosFake.modelos
-        : bancoDadosFake.historicoServicos;
+  tituloModal.innerText = "Buscar Produto no Estoque";
+  lista.innerHTML = ""; // Limpa resultados anteriores
+  
+  const estoque = JSON.parse(localStorage.getItem("estoque")) || [];
 
-  dados.forEach((item) => {
-    const li = document.createElement("li");
-    if (typeof item === "string") {
-      li.innerText = item;
-      li.onclick = () => {
-        document.getElementById(tipoBuscaAtivo).value = item;
-        fecharModal();
-      };
-    } else {
-      li.innerHTML = `<strong>SN: ${item.serie}</strong><br><small>${item.marca} - ${item.documento}</small>`;
-      li.onclick = () => {
-        document.getElementById("serie").value = item.serie;
-        document.getElementById("marca").value = item.marca;
-        document.getElementById("modelo").value = item.modelo;
-        document.getElementById("documento-cliente").value = item.documento;
-        fecharModal();
-      };
+  if (estoque.length === 0) {
+    lista.innerHTML = "<li>Nenhum item encontrado no estoque.</li>";
+    modal.style.display = "block";
+    return;
+  }
+  
+  // Usar um Set para garantir itens únicos baseados na combinação marca/modelo
+  const itensUnicos = new Map();
+  estoque.forEach(item => {
+    if (item.marca || item.modelo) {
+      const chave = `${item.marca}|${item.modelo}`;
+      if (!itensUnicos.has(chave)) {
+        itensUnicos.set(chave, item);
+      }
     }
-    lista.appendChild(li);
   });
+
+
+  if (itensUnicos.size === 0) {
+    lista.innerHTML = "<li>Nenhum item com marca/modelo encontrado.</li>";
+  } else {
+    itensUnicos.forEach(item => {
+      const li = document.createElement("li");
+      li.innerHTML = `<strong>Marca:</strong> ${item.marca || "N/A"}<br><strong>Modelo:</strong> ${item.modelo || "N/A"}`;
+      li.onclick = () => {
+        // Preenche ambos os campos ao selecionar
+        document.getElementById("marca").value = item.marca || "";
+        document.getElementById("modelo").value = item.modelo || "";
+        fecharModal();
+      };
+      lista.appendChild(li);
+    });
+  }
+
+  modal.style.display = "block";
+  document.getElementById("input-busca-modal").value = ""; // Limpa o filtro
+  filtrarBusca(); // Aplica o filtro (que não vai filtrar nada, mostrando tudo)
 }
 
 function fecharModal() {

@@ -15,7 +15,7 @@ let estoqueEmEdicao = null; // Rastreia o item em edição
 function adicionarEstoque() {
   const nome = document.getElementById("est-nome").value;
   const marca = document.getElementById("est-marca").value || "";
-  const serie = document.getElementById("est-serie").value || "";
+  const modelo = document.getElementById("est-modelo").value || "";
   const qtd = parseInt(document.getElementById("est-qtd").value);
   const custo = parseFloat(document.getElementById("est-custo").value) || 0;
 
@@ -26,7 +26,7 @@ function adicionarEstoque() {
   const itemData = {
     nome,
     marca,
-    serie,
+    modelo,
     qtd,
     custo,
     data: new Date().toLocaleDateString(),
@@ -42,7 +42,7 @@ function adicionarEstoque() {
       (item) =>
         item.nome.toLowerCase() === nome.toLowerCase() &&
         (item.marca || "").toLowerCase() === marca.toLowerCase() &&
-        (item.serie || "").toLowerCase() === serie.toLowerCase()
+        (item.modelo || "").toLowerCase() === modelo.toLowerCase()
     );
 
     if (index !== -1) {
@@ -59,7 +59,7 @@ function adicionarEstoque() {
   // Limpa campos e reseta estado
   document.getElementById("est-nome").value = "";
   document.getElementById("est-marca").value = "";
-  document.getElementById("est-serie").value = "";
+  document.getElementById("est-modelo").value = "";
   document.getElementById("est-qtd").value = "";
   document.getElementById("est-custo").value = "";
   estoqueEmEdicao = null;
@@ -82,7 +82,7 @@ function renderizarEstoque() {
         <tr>
             <td><strong>${i.nome}</strong></td>
             <td>${i.marca || ""}</td>
-            <td>${i.serie || ""}</td>
+            <td>${i.modelo || ""}</td>
             <td>${i.qtd} un</td>
             <td>R$ ${parseFloat(i.custo).toFixed(2)}</td>
             <td>${i.data}</td>
@@ -105,7 +105,7 @@ function editarEstoque(index) {
 
   document.getElementById("est-nome").value = item.nome;
   document.getElementById("est-marca").value = item.marca;
-  document.getElementById("est-serie").value = item.serie;
+  document.getElementById("est-modelo").value = item.modelo;
   document.getElementById("est-qtd").value = item.qtd;
   document.getElementById("est-custo").value = item.custo;
 
