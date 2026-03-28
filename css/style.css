@@ -660,5 +660,32 @@ section {
   overflow-y: auto;  /* Adiciona a barra de rolagem vertical quando necessário */
   border: 1px solid var(--border); /* Borda sutil para o container */
   border-radius: 12px; /* Cantos arredondados */
-  padding: 5px; /* Pequeno espaço interno */
+  margin-top: 25px; /* Adiciona espaço acima da tabela */
+}
+
+/* Forçar o colapso da borda em tabelas com rolagem para o cabeçalho fixo funcionar */
+.table-container .data-table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  width: 100%; /* Garante que a tabela ocupe o espaço do container */
+}
+
+/* Remover o raio da borda das células, pois não funciona com bordas colapsadas */
+.table-container .data-table tr td:first-child,
+.table-container .data-table tr td:last-child {
+  border-radius: 0;
+}
+
+/* Adicionar uma borda inferior às células para manter a separação visual */
+.table-container .data-table td {
+  border-bottom: 1px solid var(--border);
+}
+
+/* Manter o cabeçalho fixo com um fundo sólido e uma borda inferior */
+.table-container .data-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--card-bg);
+  border-bottom: 2px solid var(--border);
 }
