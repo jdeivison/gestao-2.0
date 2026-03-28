@@ -430,11 +430,11 @@ section {
 }
 
 #modal-lista-os .modal-content {
-  width: 80%;
-  max-width: 900px;
+  width: 95%;
+  max-width: 1600px;
   display: flex;
   flex-direction: column;
-  max-height: 80vh;
+  max-height: 85vh;
 }
 
 .modal-footer {

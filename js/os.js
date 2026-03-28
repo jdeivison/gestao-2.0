@@ -211,7 +211,7 @@ function abrirModalListaOS() {
   if (ordens.length === 0) {
     conteudo.innerHTML = "<p>Nenhuma Ordem de Serviço encontrada.</p>";
   } else {
-    let tabelaHTML = `<div style="overflow-x: auto;"><table class="data-table">
+    let tabelaHTML = `<table class="data-table">
       <thead>
         <tr>
           <th>Selecionar</th>
@@ -249,7 +249,7 @@ function abrirModalListaOS() {
         </tr>`;
     });
 
-    tabelaHTML += '</tbody></table></div>';
+    tabelaHTML += '</tbody></table>';
     conteudo.innerHTML = tabelaHTML;
   }
 
