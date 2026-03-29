@@ -8,7 +8,11 @@ function cadastrarCliente(event) {
   const cpf = document.getElementById('cliente-cpf').value;
   const contato = document.getElementById('cliente-contato').value;
   const email = document.getElementById('cliente-email').value;
-  const endereco = document.getElementById('cliente-endereco').value;
+  const cep = document.getElementById('cliente-cep').value;
+  const rua = document.getElementById('cliente-rua').value;
+  const numero = document.getElementById('cliente-numero').value;
+  const bairro = document.getElementById('cliente-bairro').value;
+  const cidade = document.getElementById('cliente-cidade').value;
 
   // Validação simples para garantir que os campos obrigatórios não estão vazios
   if (!nome || !cpf) {
@@ -24,7 +28,11 @@ function cadastrarCliente(event) {
     cpf: cpf,
     contato: contato,
     email: email,
-    endereco: endereco,
+    cep: cep,
+    rua: rua,
+    numero: numero,
+    bairro: bairro,
+    cidade: cidade,
     dataCadastro: new Date().toLocaleDateString()
   };
 
