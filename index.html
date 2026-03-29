@@ -17,6 +17,9 @@
           <button onclick="showSection('os-section')" title="Nova OS">
             <i>📄</i> <span>Nova Ordem</span>
           </button>
+          <button onclick="showSection('cadastro-section')" title="Cadastro">
+            <i>👤</i> <span>Cadastro</span>
+          </button>
           <button onclick="showSection('estoque-section')" title="Estoque">
             <i>📦</i> <span>Estoque</span>
           </button>
@@ -193,6 +196,49 @@
               <div class="actions">
 
                 <button type="submit" class="btn btn-save">💾 Salvar OS</button>
+              </div>
+            </form>
+          </section>
+
+          <section id="cadastro-section" style="display: none">
+            <div class="section-header">
+              <h2>Cadastro de Clientes</h2>
+            </div>
+            <form id="cliente-form" onsubmit="cadastrarCliente(event)">
+              <div class="grid-form">
+                <div class="input-group">
+                  <label for="cliente-nome">Nome Completo</label>
+                  <div class="input-container">
+                    <input type="text" id="cliente-nome" placeholder="Nome completo do cliente" required />
+                  </div>
+                </div>
+                <div class="input-group">
+                  <label for="cliente-cpf">CPF</label>
+                  <div class="input-container">
+                    <input type="text" id="cliente-cpf" placeholder="___.___.___-__" required />
+                  </div>
+                </div>
+                <div class="input-group">
+                  <label for="cliente-contato">WhatsApp/Telefone</label>
+                  <div class="input-container">
+                    <input type="text" id="cliente-contato" placeholder="(DD) 9____-____" />
+                  </div>
+                </div>
+                <div class="input-group">
+                  <label for="cliente-email">E-mail</label>
+                  <div class="input-container">
+                    <input type="email" id="cliente-email" placeholder="exemplo@email.com" />
+                  </div>
+                </div>
+                <div class="input-group">
+                  <label for="cliente-endereco">Endereço</label>
+                  <div class="input-container">
+                    <input type="text" id="cliente-endereco" placeholder="Rua, número, bairro, cidade" />
+                  </div>
+                </div>
+              </div>
+              <div class="actions">
+                <button type="submit" class="btn btn-save">💾 Cadastrar Cliente</button>
               </div>
             </form>
           </section>
@@ -584,5 +630,6 @@
     <script src="js/estoque.js"></script>
     <script src="js/financeiro.js"></script>
     <script src="js/garantia.js"></script>
+    <script src="js/cadastro.js"></script>
   </body>
 </html>
