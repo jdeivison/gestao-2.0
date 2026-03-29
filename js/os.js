@@ -201,8 +201,48 @@ function buscarHistorico(tipo) {
   filtrarBusca();
 }
 
+function buscarCliente() {
+  tipoBuscaAtivo = 'cliente';
+  const modal = document.getElementById("modal-busca");
+  const lista = document.getElementById("lista-resultados");
+  const tituloModal = document.getElementById("modal-titulo");
+  const clientes = JSON.parse(localStorage.getItem("clientes")) || [];
+
+  lista.innerHTML = "";
+  tituloModal.innerText = "Buscar Cliente";
+
+  if (clientes.length === 0) {
+    lista.innerHTML = "<li>Nenhum cliente cadastrado.</li>";
+  } else {
+    clientes.forEach(cliente => {
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <div class="search-result-item">
+          <span class="search-result-main">${cliente.nome}</span>
+          <span class="search-result-qty">CPF: ${cliente.cpf}</span>
+        </div>`;
+      li.onclick = () => {
+        document.getElementById("nome-cliente").value = cliente.nome;
+        document.getElementById("documento-cliente").value = cliente.cpf;
+        fecharModal();
+      };
+      lista.appendChild(li);
+    });
+  }
+
+  modal.style.display = "block";
+  document.getElementById("input-busca-modal").value = "";
+  filtrarBusca();
+}
+
 function fecharModal() {
   document.getElementById("modal-busca").style.display = "none";
+  // Limpa os eventos de clique para evitar que a seleção anterior seja acionada
+  const lista = document.getElementById("lista-resultados");
+  const itens = lista.getElementsByTagName('li');
+  for (let i = 0; i < itens.length; i++) {
+    itens[i].onclick = null;
+  }
 }
 
 function abrirModalListaOS() {
@@ -306,16 +346,23 @@ function excluirOS(index) {
 }
 
 function filtrarBusca() {
-  const termo = document
-    .getElementById("input-busca-modal")
-    .value.toLowerCase();
+  const termo = document.getElementById("input-busca-modal").value.toLowerCase();
   const itens = document.querySelectorAll("#lista-resultados li");
-  itens.forEach(
-    (li) =>
-      (li.style.display = li.innerText.toLowerCase().includes(termo)
-        ? "block"
-        : "none"),
-  );
+
+  itens.forEach((li) => {
+    const textoItem = li.innerText.toLowerCase();
+    let corresponde = textoItem.includes(termo);
+
+    if (tipoBuscaAtivo === 'cliente' && !corresponde) {
+      const cpfElement = li.querySelector('.search-result-qty');
+      if (cpfElement) {
+        const cpfText = cpfElement.innerText.toLowerCase();
+        corresponde = cpfText.includes(termo);
+      }
+    }
+    
+    li.style.display = corresponde ? "block" : "none";
+  });
 }
 
 
