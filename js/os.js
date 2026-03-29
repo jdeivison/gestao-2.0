@@ -62,10 +62,12 @@ function showSection(sectionId) {
   // Salva a última seção ativa no localStorage
   localStorage.setItem("last_active_section", sectionId);
 
-
+  // Renderiza o conteúdo específico da seção
+  if (sectionId === "cadastro-section") renderizarTabelaClientes();
   if (sectionId === "financeiro-section") renderizarFinanceiro();
   if (sectionId === "estoque-section") renderizarEstoque();
   if (sectionId === "remessa-section") renderizarRemessas();
+  
   atualizarDashboard();
 }
 

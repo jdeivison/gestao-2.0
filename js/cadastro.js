@@ -51,6 +51,67 @@ function cadastrarCliente(event) {
   // Limpa os campos do formulário para o próximo cadastro
   document.getElementById('cliente-form').reset();
 
+  // Atualiza a tabela de clientes para exibir o novo registro
+  renderizarTabelaClientes();
+
   // Opcional: Log para fins de depuração
   console.log('Clientes cadastrados:', clientes);
+}
+
+/**
+ * Renderiza a tabela de clientes com os dados do localStorage.
+ */
+function renderizarTabelaClientes() {
+  const clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+  const corpoTabela = document.getElementById('corpo-tabela-clientes');
+
+  // Limpa o conteúdo atual da tabela
+  corpoTabela.innerHTML = '';
+
+  // Itera sobre cada cliente e cria uma linha na tabela
+  clientes.forEach(cliente => {
+    const enderecoCompleto = `${cliente.rua || ''}, ${cliente.numero || ''} - ${cliente.bairro || ''}, ${cliente.cidade || ''} (${cliente.cep || ''})`;
+    
+    const linha = `
+      <tr>
+        <td>${cliente.nome}</td>
+        <td>${cliente.cpf}</td>
+        <td>${cliente.contato || '-'}</td>
+        <td>${cliente.email || '-'}</td>
+        <td>${cliente.rua ? enderecoCompleto : '-'}</td>
+        <td>
+          <button class="btn-acao btn-edit" onclick="editarCliente('${cliente.id}')">✏️</button>
+          <button class="btn-acao btn-delete" onclick="excluirCliente('${cliente.id}')">🗑️</button>
+        </td>
+      </tr>
+    `;
+    corpoTabela.innerHTML += linha;
+  });
+}
+
+/**
+ * Edita um cliente (funcionalidade a ser implementada).
+ * @param {string} id - O ID do cliente a ser editado.
+ */
+function editarCliente(id) {
+  exibirAviso(`Funcionalidade de editar cliente (ID: ${id}) a ser implementada.`);
+  // Futuro: Implementar a lógica para preencher o formulário com os dados do cliente para edição.
+}
+
+/**
+ * Exclui um cliente do localStorage e atualiza a tabela.
+ * @param {string} id - O ID do cliente a ser excluído.
+ */
+function excluirCliente(id) {
+  exibirConfirmacao(
+    'Excluir Cliente',
+    'Tem certeza que deseja excluir este cliente? Esta ação não pode ser desfeita.',
+    () => {
+      let clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+      clientes = clientes.filter(c => c.id !== id);
+      localStorage.setItem('clientes', JSON.stringify(clientes));
+      renderizarTabelaClientes();
+      exibirAviso('Cliente excluído com sucesso!');
+    }
+  );
 }
