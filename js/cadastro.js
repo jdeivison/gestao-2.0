@@ -23,6 +23,12 @@ function cadastrarCliente(event) {
     return;
   }
 
+  // Validação simples do e-mail
+  if (email && (!email.includes('@') || !email.includes('.com'))) {
+    exibirAviso('Por favor, insira um e-mail válido (deve conter @ e .com).');
+    return;
+  }
+
   // Cria um objeto para representar o novo cliente
   const clienteData = {
     nome: nome,
