@@ -148,3 +148,8 @@ function excluirCliente(id) {
     }
   );
 }
+
+function showClienteTable() {
+  const tableContainer = document.querySelector('.tabela-cadastro-container');
+  tableContainer.scrollIntoView({ behavior: 'smooth' });
+}
