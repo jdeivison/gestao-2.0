@@ -595,6 +595,13 @@ section {
   padding: 15px;
 }
 
+.data-table thead th {
+  position: sticky;
+  top: 0;
+  background: var(--card-bg);
+  z-index: 10;
+}
+
 /* --- ALINHAMENTOS ESPECÍFICOS --- */
 
 /* Tabela Estoque: Item à Esquerda, Custo à Direita */
