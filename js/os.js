@@ -745,6 +745,9 @@ window.onload = () => {
   const salvos = JSON.parse(localStorage.getItem("meu_sistema_os")) || [];
   bancoDadosFake.historicoServicos = [...salvos];
 
+  // Migrar OSs antigas para adicionar campo nomeCliente se necessário
+  migrarOSsAntigas();
+
   // Recupera e exibe a última seção salva, ou a padrão
   const lastSection =
     localStorage.getItem("last_active_section") || "os-section";
@@ -758,6 +761,17 @@ window.onload = () => {
 
 // Função para gerar PDF da Ordem de Serviço
 function gerarPDFOS(os, valor) {
+  // Tenta obter o nome do cliente
+  let nomeCliente = os.nomeCliente;
+  if (!nomeCliente && os.documento) {
+    // Busca o nome nos cadastros de clientes
+    const clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+    const cliente = clientes.find(c => c.cpf === os.documento);
+    if (cliente) {
+      nomeCliente = cliente.nome;
+    }
+  }
+
   const element = document.createElement('div');
   element.innerHTML = `
     <div style="font-family: Arial, sans-serif; padding: 40px; max-width: 600px; margin: 0 auto;">
@@ -769,7 +783,7 @@ function gerarPDFOS(os, valor) {
       <p><strong>Marca:</strong> ${os.marca || ''}</p>
       <p><strong>Modelo:</strong> ${os.modelo || ''}</p>
       <p><strong>N° de Série:</strong> ${os.serie || ''}</p>
-      <p><strong>Nome do Cliente:</strong> ${os.nomeCliente || ''}</p>
+      <p><strong>Nome do Cliente:</strong> ${nomeCliente || 'Não informado'}</p>
       <p><strong>CPF/CNPJ Cliente:</strong> ${os.documento || ''}</p>
       <p><strong>N° Lacre:</strong> ${os.lacre || ''}</p>
       <p><strong>Etiqueta:</strong> ${os.etiqueta || ''}</p>
@@ -791,4 +805,27 @@ function gerarPDFOS(os, valor) {
   };
 
   html2pdf().set(options).from(element).save();
+}
+
+// Função para migrar OSs antigas adicionando o campo nomeCliente se não existir
+function migrarOSsAntigas() {
+  const ordens = JSON.parse(localStorage.getItem("meu_sistema_os")) || [];
+  let atualizou = false;
+
+  ordens.forEach(os => {
+    if (!os.nomeCliente && os.documento) {
+      // Tenta encontrar o cliente pelo documento nos cadastros
+      const clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+      const cliente = clientes.find(c => c.cpf === os.documento);
+      if (cliente) {
+        os.nomeCliente = cliente.nome;
+        atualizou = true;
+      }
+    }
+  });
+
+  if (atualizou) {
+    localStorage.setItem("meu_sistema_os", JSON.stringify(ordens));
+    console.log('OSs migradas com sucesso - campo nomeCliente adicionado');
+  }
 }
