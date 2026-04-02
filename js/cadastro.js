@@ -136,20 +136,55 @@ function editarCliente(id) {
 
   if (cliente) {
     clienteEmEdicao = id;
-    document.getElementById('cliente-nome').value = cliente.nome;
-    document.getElementById('cliente-cpf').value = cliente.cpf;
-    document.getElementById('cliente-contato').value = cliente.contato;
-    document.getElementById('cliente-email').value = cliente.email;
-    document.getElementById('cliente-cep').value = cliente.cep;
-    document.getElementById('cliente-rua').value = cliente.rua;
-    document.getElementById('cliente-numero').value = cliente.numero;
-    document.getElementById('cliente-bairro').value = cliente.bairro;
-    document.getElementById('cliente-cidade').value = cliente.cidade;
+    document.getElementById('edit-cliente-nome').value = cliente.nome || '';
+    document.getElementById('edit-cliente-cpf').value = cliente.cpf || '';
+    document.getElementById('edit-cliente-contato').value = cliente.contato || '';
+    document.getElementById('edit-cliente-email').value = cliente.email || '';
+    document.getElementById('edit-cliente-cep').value = cliente.cep || '';
+    document.getElementById('edit-cliente-rua').value = cliente.rua || '';
+    document.getElementById('edit-cliente-numero').value = cliente.numero || '';
+    document.getElementById('edit-cliente-bairro').value = cliente.bairro || '';
+    document.getElementById('edit-cliente-cidade').value = cliente.cidade || '';
 
-    document.querySelector('#cliente-form .btn-save').innerText = '💾 Atualizar';
-    document.getElementById('cliente-nome').focus();
+    document.getElementById('modal-editar-cliente').style.display = 'block';
+  }
+}
+
+function fecharModalEditarCliente() {
+  document.getElementById('modal-editar-cliente').style.display = 'none';
+  clienteEmEdicao = null;
+}
+
+function salvarEdicaoCliente() {
+  if (!clienteEmEdicao) return;
+  
+  const nome = document.getElementById('edit-cliente-nome').value.trim();
+  const cpf = document.getElementById('edit-cliente-cpf').value.trim();
+  
+  if (!nome || !cpf) {
+    return exibirAviso("Nome e CPF/CNPJ são obrigatórios!");
+  }
+
+  const clientes = JSON.parse(localStorage.getItem('clientes')) || [];
+  const index = clientes.findIndex(c => c.id === clienteEmEdicao);
+  
+  if (index !== -1) {
+    clientes[index].nome = nome;
+    clientes[index].cpf = cpf;
+    clientes[index].contato = document.getElementById('edit-cliente-contato').value;
+    clientes[index].email = document.getElementById('edit-cliente-email').value;
+    clientes[index].cep = document.getElementById('edit-cliente-cep').value;
+    clientes[index].rua = document.getElementById('edit-cliente-rua').value;
+    clientes[index].numero = document.getElementById('edit-cliente-numero').value;
+    clientes[index].bairro = document.getElementById('edit-cliente-bairro').value;
+    clientes[index].cidade = document.getElementById('edit-cliente-cidade').value;
+
+    localStorage.setItem('clientes', JSON.stringify(clientes));
+    exibirAviso(`Cliente "${nome}" atualizado com sucesso!`);
+    renderizarTabelaClientes();
     
-    fecharModalClientes(); // Fecha o modal após preencher os dados
+    // Atualizar no os.js também se for necessário preencher os modais dependentes.
+    fecharModalEditarCliente();
   }
 }
 

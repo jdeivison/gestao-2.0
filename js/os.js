@@ -296,27 +296,54 @@ function editarOS(index) {
 
   osEmEdicao = index; // Define o índice da OS que está sendo editada
 
-  // Preenche o formulário com os dados da OS
-  document.getElementById("peca-produto").value = os.pecaProduto || "";
-  document.getElementById("marca").value = os.marca;
-  document.getElementById("modelo").value = os.modelo;
-  document.getElementById("serie").value = os.serie;
-  document.getElementById("nome-cliente").value = os.nomeCliente || "";
-  document.getElementById("documento-cliente").value = os.documento;
-  document.getElementById("lacre").value = os.lacre;
-  document.getElementById("etiqueta").value = os.etiqueta;
-  document.getElementById("inventario").value = os.inventario;
+  // Preenche o modal com os dados da OS
+  document.getElementById("edit-peca-produto").value = os.pecaProduto || "";
+  document.getElementById("edit-marca").value = os.marca || "";
+  document.getElementById("edit-modelo").value = os.modelo || "";
+  document.getElementById("edit-serie").value = os.serie || "";
+  document.getElementById("edit-nome-cliente").value = os.nomeCliente || "";
+  document.getElementById("edit-documento-cliente").value = os.documento || "";
+  document.getElementById("edit-lacre").value = os.lacre || "";
+  document.getElementById("edit-etiqueta").value = os.etiqueta || "";
+  document.getElementById("edit-inventario").value = os.inventario || "";
 
-
-  
-  showSection('os-section'); // Mostra a seção do formulário
+  document.getElementById("modal-editar-os").style.display = "block";
   fecharModalListaOS(); // Fecha o modal da lista
-  
-  // Altera o título da seção e o texto do botão para indicar edição
-  document.querySelector("#os-section h2").innerText = "Editando Ordem de Serviço";
-  document.querySelector("#os-form .btn-save").innerText = "💾 Atualizar OS";
 }
 
+function fecharModalEditarOS() {
+  document.getElementById("modal-editar-os").style.display = "none";
+  osEmEdicao = null;
+}
+
+function salvarEdicaoOS() {
+  if (osEmEdicao === null) return;
+
+  const osData = {
+    pecaProduto: document.getElementById("edit-peca-produto").value.trim(),
+    marca: document.getElementById("edit-marca").value.trim(),
+    modelo: document.getElementById("edit-modelo").value.trim(),
+    serie: document.getElementById("edit-serie").value.trim(),
+    nomeCliente: document.getElementById("edit-nome-cliente").value.trim(),
+    documento: document.getElementById("edit-documento-cliente").value.trim(),
+    lacre: document.getElementById("edit-lacre").value.trim(),
+    etiqueta: document.getElementById("edit-etiqueta").value.trim(),
+    inventario: document.getElementById("edit-inventario").value.trim()
+  };
+
+  let historico = JSON.parse(localStorage.getItem("meu_sistema_os")) || [];
+  const osExistente = historico[osEmEdicao];
+
+  // Mescla para não perder o número da OS e a data de cadastro
+  historico[osEmEdicao] = { ...osExistente, ...osData };
+
+  localStorage.setItem("meu_sistema_os", JSON.stringify(historico));
+  bancoDadosFake.historicoServicos = historico;
+
+  exibirAviso("✅ OS Atualizada com sucesso!");
+  fecharModalEditarOS();
+  atualizarDashboard();
+}
 function excluirOS(index) {
     exibirConfirmacao(
     'Excluir Ordem de Serviço',

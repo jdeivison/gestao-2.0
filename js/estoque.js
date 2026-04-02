@@ -103,16 +103,48 @@ function editarEstoque(index) {
 
   estoqueEmEdicao = index;
 
-  document.getElementById("est-nome").value = item.nome;
-  document.getElementById("est-marca").value = item.marca;
-  document.getElementById("est-modelo").value = item.modelo;
-  document.getElementById("est-qtd").value = item.qtd;
-  document.getElementById("est-custo").value = item.custo;
+  document.getElementById("edit-est-nome").value = item.nome;
+  document.getElementById("edit-est-marca").value = item.marca || "";
+  document.getElementById("edit-est-modelo").value = item.modelo || "";
+  document.getElementById("edit-est-qtd").value = item.qtd;
+  document.getElementById("edit-est-custo").value = item.custo;
 
-  const btn = document.querySelector("#estoque-section .btn-save");
-  btn.innerText = "💾 Atualizar Item";
+  document.getElementById("modal-editar-estoque").style.display = "block";
+}
+
+function fecharModalEditarEstoque() {
+  document.getElementById("modal-editar-estoque").style.display = "none";
+  estoqueEmEdicao = null;
+}
+
+function salvarEdicaoEstoque() {
+  if (estoqueEmEdicao === null) return;
   
-  document.getElementById('est-nome').focus();
+  const nome = document.getElementById("edit-est-nome").value.trim();
+  const marca = document.getElementById("edit-est-marca").value.trim();
+  const modelo = document.getElementById("edit-est-modelo").value.trim();
+  const qtd = parseInt(document.getElementById("edit-est-qtd").value);
+  const custo = parseFloat(document.getElementById("edit-est-custo").value) || 0;
+
+  if (!nome || isNaN(qtd)) {
+    return exibirAviso("Preencha nome e quantidade corretamente!");
+  }
+
+  let estoque = JSON.parse(localStorage.getItem("estoque")) || [];
+  
+  estoque[estoqueEmEdicao] = {
+    nome,
+    marca,
+    modelo,
+    qtd,
+    custo,
+    data: new Date().toLocaleDateString(),
+  };
+
+  localStorage.setItem("estoque", JSON.stringify(estoque));
+  renderizarEstoque();
+  exibirAviso("✅ Item atualizado com sucesso!");
+  fecharModalEditarEstoque();
 }
 
 function excluirEstoque(index) {

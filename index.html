@@ -370,7 +370,7 @@
                   border: 1px solid var(--success);
                 "
               >
-                <small>A Receber</small>
+                <small>Entradas</small>
                 <h3 id="total-receber">R$ 0,00</h3>
               </div>
               <div
@@ -381,7 +381,7 @@
                   border: 1px solid #e74c3c;
                 "
               >
-                <small>A Pagar</small>
+                <small>Saídas</small>
                 <h3 id="total-pagar">R$ 0,00</h3>
               </div>
             </div>
@@ -736,6 +736,134 @@
         <div class="actions" style="justify-content: center; padding-top: 10px; border-top: none">
           <button type="button" class="btn btn-cancel" id="btn-confirmacao-nao">Não</button>
           <button type="button" class="btn btn-save" id="btn-confirmacao-sim">Sim</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-editar-cliente" class="modal">
+      <div class="modal-content" style="width: 500px">
+        <h3>Editar Cliente</h3>
+        <div class="grid-form" style="margin: 20px 0">
+          <div class="input-group">
+            <label>Nome Completo</label>
+            <input type="text" id="edit-cliente-nome" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>CPF/CNPJ</label>
+            <input type="text" id="edit-cliente-cpf" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>WhatsApp/Telefone</label>
+            <input type="text" id="edit-cliente-contato" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>E-mail</label>
+            <input type="email" id="edit-cliente-email" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>CEP</label>
+            <input type="text" id="edit-cliente-cep" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>Rua</label>
+            <input type="text" id="edit-cliente-rua" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>Número</label>
+            <input type="text" id="edit-cliente-numero" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>Bairro</label>
+            <input type="text" id="edit-cliente-bairro" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>Cidade</label>
+            <input type="text" id="edit-cliente-cidade" class="input-box" />
+          </div>
+        </div>
+        <div class="actions" style="justify-content: flex-end; padding-top: 10px; border-top: none">
+          <button type="button" class="btn btn-cancel" onclick="fecharModalEditarCliente()">Cancelar</button>
+          <button type="button" class="btn btn-save" onclick="salvarEdicaoCliente()">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-editar-estoque" class="modal">
+      <div class="modal-content" style="width: 500px">
+        <h3>Editar Item de Estoque</h3>
+        <div class="grid-form" style="margin: 20px 0">
+          <div class="input-group">
+            <label>Produto / Peça</label>
+            <input type="text" id="edit-est-nome" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>Marca</label>
+            <input type="text" id="edit-est-marca" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>Modelo</label>
+            <input type="text" id="edit-est-modelo" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>Quantidade</label>
+            <input type="number" id="edit-est-qtd" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>Preço de Custo (R$)</label>
+            <input type="number" id="edit-est-custo" class="input-box" step="0.01" />
+          </div>
+        </div>
+        <div class="actions" style="justify-content: flex-end; padding-top: 10px; border-top: none">
+          <button type="button" class="btn btn-cancel" onclick="fecharModalEditarEstoque()">Cancelar</button>
+          <button type="button" class="btn btn-save" onclick="salvarEdicaoEstoque()">Salvar</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-editar-os" class="modal">
+      <div class="modal-content" style="width: 600px">
+        <h3>Editar Ordem de Serviço</h3>
+        <div class="grid-form" style="margin: 20px 0">
+          <div class="input-group">
+            <label>Peça / Produto</label>
+            <input type="text" id="edit-peca-produto" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>Marca</label>
+            <input type="text" id="edit-marca" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>Modelo</label>
+            <input type="text" id="edit-modelo" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>N° de Série</label>
+            <input type="text" id="edit-serie" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>Nome do Cliente</label>
+            <input type="text" id="edit-nome-cliente" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>CPF/CNPJ Cliente</label>
+            <input type="text" id="edit-documento-cliente" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>N° Lacre</label>
+            <input type="text" id="edit-lacre" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>Etiqueta</label>
+            <input type="text" id="edit-etiqueta" class="input-box" />
+          </div>
+          <div class="input-group">
+            <label>Inventário</label>
+            <input type="text" id="edit-inventario" class="input-box" />
+          </div>
+        </div>
+        <div class="actions" style="justify-content: flex-end; padding-top: 10px; border-top: none">
+          <button type="button" class="btn btn-cancel" onclick="fecharModalEditarOS()">Cancelar</button>
+          <button type="button" class="btn btn-save" onclick="salvarEdicaoOS()">Salvar</button>
         </div>
       </div>
     </div>
