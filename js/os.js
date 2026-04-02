@@ -556,8 +556,83 @@ function exibirConfirmacao(titulo, mensagem, callbackSim) {
 }
 
 function editarLancamento(id) {
-  exibirAviso(`Editar lançamento ID: ${id}. Funcionalidade a ser implementada.`);
-  // Futuro: Abrir um modal com os dados de 'f' para edição.
+  const financeiro = JSON.parse(localStorage.getItem("financeiro_dados")) || [];
+  const lancamento = financeiro.find(f => f.id === id);
+
+  if (!lancamento) {
+    exibirAviso("Lançamento não encontrado!");
+    return;
+  }
+
+  // Preencher o modal com os dados atuais
+  document.getElementById("edit-data-financeiro").value = lancamento.data;
+  document.getElementById("edit-desc-financeiro").value = lancamento.desc;
+  document.getElementById("edit-valor-financeiro").value = lancamento.valor;
+  document.getElementById("edit-tipo-financeiro").value = lancamento.tipo;
+
+  // Guardar o ID para salvar depois
+  document.getElementById("modal-editar-financeiro").dataset.lancamentoId = id;
+
+  // Abrir o modal
+  document.getElementById("modal-editar-financeiro").style.display = "block";
+}
+
+function fecharModalEditarFinanceiro() {
+  document.getElementById("modal-editar-financeiro").style.display = "none";
+  // Limpar o ID guardado
+  document.getElementById("modal-editar-financeiro").dataset.lancamentoId = "";
+}
+
+function salvarEdicaoFinanceiro() {
+  const id = document.getElementById("modal-editar-financeiro").dataset.lancamentoId;
+  const data = document.getElementById("edit-data-financeiro").value;
+  const desc = document.getElementById("edit-desc-financeiro").value.trim();
+  const valor = parseFloat(document.getElementById("edit-valor-financeiro").value);
+  const tipo = document.getElementById("edit-tipo-financeiro").value;
+
+  // Validações
+  if (!data) {
+    exibirAviso("Por favor, selecione uma data!");
+    return;
+  }
+
+  if (!desc) {
+    exibirAviso("Por favor, informe uma descrição!");
+    return;
+  }
+
+  if (isNaN(valor) || valor <= 0) {
+    exibirAviso("Por favor, informe um valor válido!");
+    return;
+  }
+
+  // Buscar e atualizar o lançamento
+  let financeiro = JSON.parse(localStorage.getItem("financeiro_dados")) || [];
+  const index = financeiro.findIndex(f => f.id === parseInt(id));
+
+  if (index === -1) {
+    exibirAviso("Lançamento não encontrado!");
+    return;
+  }
+
+  // Atualizar os dados
+  financeiro[index] = {
+    ...financeiro[index],
+    data: data,
+    desc: desc,
+    valor: valor,
+    tipo: tipo
+  };
+
+  // Salvar no localStorage
+  localStorage.setItem("financeiro_dados", JSON.stringify(financeiro));
+
+  // Fechar modal e atualizar tabela
+  fecharModalEditarFinanceiro();
+  renderizarFinanceiro();
+  atualizarDashboard();
+
+  exibirAviso("Lançamento atualizado com sucesso!");
 }
 
 function excluirLancamento(id) {

@@ -606,6 +606,61 @@
       </div>
     </div>
 
+    <div id="modal-editar-financeiro" class="modal">
+      <div class="modal-content" style="width: 500px">
+        <h3>Editar Lançamento Financeiro</h3>
+        <div class="input-group" style="margin: 20px 0">
+          <label>Data</label>
+          <input
+            type="date"
+            id="edit-data-financeiro"
+            class="input-box"
+          />
+        </div>
+        <div class="input-group" style="margin: 20px 0">
+          <label>Descrição</label>
+          <input
+            type="text"
+            id="edit-desc-financeiro"
+            class="input-box"
+            placeholder="Descrição do lançamento"
+          />
+        </div>
+        <div class="input-group" style="margin: 20px 0">
+          <label>Valor (R$)</label>
+          <input
+            type="number"
+            id="edit-valor-financeiro"
+            class="input-box"
+            placeholder="0.00"
+            step="0.01"
+          />
+        </div>
+        <div class="input-group" style="margin: 20px 0">
+          <label>Categoria</label>
+          <select id="edit-tipo-financeiro" class="input-box">
+            <option value="Entrada">Entrada</option>
+            <option value="Saída">Saída</option>
+          </select>
+        </div>
+        <div
+          class="actions"
+          style="justify-content: flex-end; padding-top: 10px; border-top: none"
+        >
+          <button
+            type="button"
+            class="btn btn-cancel"
+            onclick="fecharModalEditarFinanceiro()"
+          >
+            Cancelar
+          </button>
+          <button type="button" class="btn btn-save" onclick="salvarEdicaoFinanceiro()">
+            Salvar
+          </button>
+        </div>
+      </div>
+    </div>
+
     <div id="modal-confirmacao-remessa" class="modal">
       <div class="modal-content" style="width: 400px; text-align: center">
         <h3 id="modal-remessa-titulo">Retornar item ao estoque?</h3>
