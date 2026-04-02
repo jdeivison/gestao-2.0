@@ -301,6 +301,7 @@ function editarOS(index) {
   document.getElementById("marca").value = os.marca;
   document.getElementById("modelo").value = os.modelo;
   document.getElementById("serie").value = os.serie;
+  document.getElementById("nome-cliente").value = os.nomeCliente || "";
   document.getElementById("documento-cliente").value = os.documento;
   document.getElementById("lacre").value = os.lacre;
   document.getElementById("etiqueta").value = os.etiqueta;
