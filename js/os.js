@@ -303,6 +303,7 @@ function abrirModalPendencias() {
     let tabelaHTML = `<table class="data-table">
       <thead>
         <tr>
+          <th>Selecionar</th>
           <th>Número da OS</th>
           <th>Data</th>
           <th>Cliente</th>
@@ -316,6 +317,7 @@ function abrirModalPendencias() {
       const originalIndex = ordens.indexOf(os);
       tabelaHTML += `
         <tr>
+          <td><input type="checkbox" class="pendencia-checkbox" value="${originalIndex}" onchange="atualizarBotaoConcluir()"></td>
           <td>${os.numero || ''}</td>
           <td>${os.dataCadastro || ''}</td>
           <td>${os.nomeCliente || ''}</td>
@@ -332,10 +334,37 @@ function abrirModalPendencias() {
   }
 
   modal.style.display = "block";
+  atualizarBotaoConcluir(); // Garante que o botão esteja no estado correto ao abrir o modal
 }
 
 function fecharModalPendencias() {
   document.getElementById("modal-pendencias").style.display = "none";
+}
+
+function atualizarBotaoConcluir() {
+  const checkboxes = document.querySelectorAll('.pendencia-checkbox:checked');
+  const botao = document.getElementById('btn-concluir-os');
+  botao.disabled = checkboxes.length === 0;
+}
+
+function concluirOSModal() {
+  const checkboxes = document.querySelectorAll('.pendencia-checkbox:checked');
+  if (checkboxes.length === 0) {
+    return exibirAviso("Selecione pelo menos uma Ordem de Serviço.");
+  }
+
+  const ordens = JSON.parse(localStorage.getItem("meu_sistema_os")) || [];
+  checkboxes.forEach(checkbox => {
+    const index = parseInt(checkbox.value);
+    if (ordens[index]) {
+      ordens[index].status = "concluida"; // Muda para concluída/garantia
+    }
+  });
+
+  localStorage.setItem("meu_sistema_os", JSON.stringify(ordens));
+  exibirAviso("OS(s) marcada(s) como concluída(s)!");
+  fecharModalPendencias();
+  atualizarDashboard();
 }
 
 function editarOS(index) {
