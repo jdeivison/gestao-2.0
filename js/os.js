@@ -435,6 +435,10 @@ function salvarEdicaoOS() {
   exibirAviso("✅ OS Atualizada com sucesso!");
   fecharModalEditarOS();
   atualizarDashboard();
+  // Atualiza a tabela de garantias se estiver na seção
+  if (document.getElementById("remessa-section").style.display !== "none") {
+    renderizarRemessas(filtroAtualRemessas);
+  }
 }
 function excluirOS(index) {
     exibirConfirmacao(
@@ -444,7 +448,12 @@ function excluirOS(index) {
       let ordens = JSON.parse(localStorage.getItem("meu_sistema_os")) || [];
       ordens.splice(index, 1);
       localStorage.setItem("meu_sistema_os", JSON.stringify(ordens));
-      abrirModalListaOS(); // Atualiza a lista no modal
+      // Atualiza a tabela de garantias se estiver na seção
+      if (document.getElementById("remessa-section").style.display !== "none") {
+        renderizarRemessas(filtroAtualRemessas);
+      } else {
+        abrirModalListaOS(); // Atualiza a lista no modal
+      }
       atualizarDashboard();
       exibirAviso('Ordem de Serviço excluída com sucesso!');
     }
@@ -794,19 +803,14 @@ function renderizarRemessas(filtro = "Todos") {
 
   corpo.innerHTML = listaFiltrada
     .map((r, index) => {
-      let acoes = "";
-      if (r.status === "Em Garantia") {
-        acoes = `<button class="btn-save" onclick="finalizarGarantia(${ordens.indexOf(r.os)})">Finalizar</button>`;
-      } else {
-        acoes = "<span>Finalizada</span>";
-      }
+      let acoes = `<button class="btn-acao btn-edit" onclick="editarOS(${ordens.indexOf(r.os)})">✏️</button> <button class="btn-acao btn-delete" onclick="excluirOS(${ordens.indexOf(r.os)})">🗑️</button>`;
 
       return `<tr>
                   <td>${r.numero}</td>
                   <td>${r.cliente}</td>
                   <td>${r.data}</td>
                   <td>${r.periodo}</td>
-                  <td>${acoes}</td>
+                  <td class="actions-cell">${acoes}</td>
               </tr>`;
     })
     .join("");
