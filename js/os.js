@@ -894,6 +894,11 @@ function confirmarVendaOS() {
   fecharModalVenda();
   document.getElementById('input-valor-venda').value = ''; // Limpa o input
   atualizarDashboard();
+
+  // Atualiza o modal de lista de OS se estiver aberto
+  if (document.getElementById('modal-lista-os').style.display === 'block') {
+    abrirModalListaOS();
+  }
 }
 
 function converterEmVendaModal() {
