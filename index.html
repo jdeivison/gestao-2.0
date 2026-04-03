@@ -69,7 +69,7 @@
                 </div>
               </div>
             </div>
-            <div class="card-kpi orange">
+            <div class="card-kpi orange" onclick="abrirModalPendencias()">
               <div class="kpi-icon">⚡</div>
               <div class="kpi-content">
                 <span class="kpi-label">Pendências</span>
@@ -540,6 +540,16 @@
             🛒 Venda / Imprimir
           </button>
         </div>
+      </div>
+    </div>
+
+    <div id="modal-pendencias" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3>Pendências</h3>
+          <span class="close" onclick="fecharModalPendencias()">&times;</span>
+        </div>
+        <div id="lista-pendencias-content"></div>
       </div>
     </div>
 

@@ -249,9 +249,10 @@ function abrirModalListaOS() {
   const modal = document.getElementById("modal-lista-os");
   const conteudo = document.getElementById("lista-os-content");
   const ordens = JSON.parse(localStorage.getItem("meu_sistema_os")) || [];
+  const ordensAtivas = ordens.filter(os => os.status !== "pendente");
 
-  if (ordens.length === 0) {
-    conteudo.innerHTML = "<p>Nenhuma Ordem de Serviço encontrada.</p>";
+  if (ordensAtivas.length === 0) {
+    conteudo.innerHTML = "<p>Nenhuma Ordem de Serviço ativa encontrada.</p>";
   } else {
     let tabelaHTML = `<table class="data-table">
       <thead>
@@ -264,15 +265,16 @@ function abrirModalListaOS() {
       </thead>
       <tbody>`;
     
-    ordens.forEach((os, index) => {
+    ordensAtivas.forEach((os, index) => {
+      const originalIndex = ordens.indexOf(os);
       tabelaHTML += `
         <tr>
-          <td><input type="checkbox" class="os-checkbox" value="${index}" onchange="atualizarBotaoVenda()"></td>
+          <td><input type="checkbox" class="os-checkbox" value="${originalIndex}" onchange="atualizarBotaoVenda()"></td>
           <td>${os.numero || ''}</td>
           <td>${os.dataCadastro || ''}</td>
           <td class="actions-cell">
-            <button class="btn-acao btn-edit" onclick="editarOS(${index})">✏️</button>
-            <button class="btn-acao btn-delete" onclick="excluirOS(${index})">🗑️</button>
+            <button class="btn-acao btn-edit" onclick="editarOS(${originalIndex})">✏️</button>
+            <button class="btn-acao btn-delete" onclick="excluirOS(${originalIndex})">🗑️</button>
           </td>
         </tr>`;
     });
@@ -287,6 +289,53 @@ function abrirModalListaOS() {
 
 function fecharModalListaOS() {
   document.getElementById("modal-lista-os").style.display = "none";
+}
+
+function abrirModalPendencias() {
+  const modal = document.getElementById("modal-pendencias");
+  const conteudo = document.getElementById("lista-pendencias-content");
+  const ordens = JSON.parse(localStorage.getItem("meu_sistema_os")) || [];
+  const pendencias = ordens.filter(os => os.status === "pendente");
+
+  if (pendencias.length === 0) {
+    conteudo.innerHTML = "<p>Nenhuma pendência encontrada.</p>";
+  } else {
+    let tabelaHTML = `<table class="data-table">
+      <thead>
+        <tr>
+          <th>Número da OS</th>
+          <th>Data</th>
+          <th>Cliente</th>
+          <th>Peça/Produto</th>
+          <th>Ações</th>
+        </tr>
+      </thead>
+      <tbody>`;
+    
+    pendencias.forEach((os, index) => {
+      const originalIndex = ordens.indexOf(os);
+      tabelaHTML += `
+        <tr>
+          <td>${os.numero || ''}</td>
+          <td>${os.dataCadastro || ''}</td>
+          <td>${os.nomeCliente || ''}</td>
+          <td>${os.pecaProduto || ''}</td>
+          <td class="actions-cell">
+            <button class="btn-acao btn-edit" onclick="editarOS(${originalIndex})">✏️</button>
+            <button class="btn-acao btn-delete" onclick="excluirOS(${originalIndex})">🗑️</button>
+          </td>
+        </tr>`;
+    });
+
+    tabelaHTML += '</tbody></table>';
+    conteudo.innerHTML = tabelaHTML;
+  }
+
+  modal.style.display = "block";
+}
+
+function fecharModalPendencias() {
+  document.getElementById("modal-pendencias").style.display = "none";
 }
 
 function editarOS(index) {
@@ -417,6 +466,7 @@ function salvarOS(event) {
     etiqueta: document.getElementById("etiqueta").value,
     inventario: document.getElementById("inventario").value,
     dataCadastro: new Date().toLocaleDateString(),
+    status: "ativo"
   };
 
   let historico = JSON.parse(localStorage.getItem("meu_sistema_os")) || [];
@@ -837,8 +887,13 @@ function confirmarVendaOS() {
   // Gera PDF da OS
   gerarPDFOS(os, valor);
 
+  // Move a OS para pendências
+  os.status = "pendente";
+  localStorage.setItem("meu_sistema_os", JSON.stringify(ordens));
+
   fecharModalVenda();
   document.getElementById('input-valor-venda').value = ''; // Limpa o input
+  atualizarDashboard();
 }
 
 function converterEmVendaModal() {
@@ -922,7 +977,7 @@ function gerarPDFOS(os, valor) {
   html2pdf().set(options).from(element).save();
 }
 
-// Função para migrar OSs antigas adicionando o campo nomeCliente se não existir
+// Função para migrar OSs antigas adicionando o campo nomeCliente e status se não existir
 function migrarOSsAntigas() {
   const ordens = JSON.parse(localStorage.getItem("meu_sistema_os")) || [];
   let atualizou = false;
@@ -937,10 +992,14 @@ function migrarOSsAntigas() {
         atualizou = true;
       }
     }
+    if (!os.status) {
+      os.status = "ativo";
+      atualizou = true;
+    }
   });
 
   if (atualizou) {
     localStorage.setItem("meu_sistema_os", JSON.stringify(ordens));
-    console.log('OSs migradas com sucesso - campo nomeCliente adicionado');
+    console.log('OSs migradas com sucesso - campos adicionados');
   }
 }

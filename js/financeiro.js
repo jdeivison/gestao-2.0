@@ -163,9 +163,16 @@ function atualizarDashboard() {
     saldoElem.innerText = `R$ ${saldoCaixa.toLocaleString("pt-BR", { minimumFractionDigits: 2 })}`;
   }
 
-  document.getElementById("count-os").innerText = os.length;
+  // Conta OS ativas (status diferente de "pendente")
+  const osAtivas = os.filter(o => o.status !== "pendente").length;
+  document.getElementById("count-os").innerText = osAtivas;
+
+  // Conta pendências (OS com status "pendente")
+  const pendencias = os.filter(o => o.status === "pendente").length;
+  document.getElementById("count-pendencias").innerText = pendencias;
 
   // Atualiza barras de progresso
-  document.getElementById("bar-os").style.width = Math.min(os.length * 10, 100) + "%";
+  document.getElementById("bar-os").style.width = Math.min(osAtivas * 10, 100) + "%";
   document.getElementById("bar-saldo").style.width = Math.min((saldoCaixa / 10000) * 100, 100) + "%";
+  document.getElementById("bar-pendencia").style.width = Math.min(pendencias * 10, 100) + "%";
 }
