@@ -451,7 +451,7 @@
 
           <section id="remessa-section" style="display: none">
             <div class="section-header">
-              <h2>Garantia, Conserto e Remessas</h2>
+              <h2>Garantias</h2>
               <div class="filter-buttons">
                 <button
                   class="btn btn-save"
@@ -461,33 +461,25 @@
                 </button>
                 <button
                   class="btn btn-save"
-                  onclick="filtrarRemessas('Aguardando Envio', this)"
+                  onclick="filtrarRemessas('Em Garantia', this)"
                 >
-                  Aguardando
+                  Em Garantia
                 </button>
                 <button
                   class="btn btn-save"
-                  onclick="filtrarRemessas('Em Trânsito', this)"
+                  onclick="filtrarRemessas('Finalizada', this)"
                 >
-                  Em Trânsito
-                </button>
-                <button
-                  class="btn btn-save"
-                  onclick="filtrarRemessas('Concluído', this)"
-                >
-                  Concluídos
+                  Finalizadas
                 </button>
               </div>
             </div>
             <table class="data-table">
               <thead>
                 <tr>
-                  <th>Item</th>
-                  <th>SN</th>
-                  <th>Qtd</th>
-                  <th>Motivo</th>
-                  <th>Status</th>
+                  <th>Número OS</th>
+                  <th>Cliente</th>
                   <th>Data</th>
+                  <th>Período de Garantia</th>
                   <th>Ações</th>
                 </tr>
               </thead>

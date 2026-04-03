@@ -763,19 +763,17 @@ let filtroAtualRemessas = "Todos";
 
 function renderizarRemessas(filtro = "Todos") {
   filtroAtualRemessas = filtro;
-  const remessas = JSON.parse(localStorage.getItem("remessas")) || [];
   const ordens = JSON.parse(localStorage.getItem("meu_sistema_os")) || [];
-  const garantias = ordens.filter(os => os.status === "garantia").map(os => ({
+  const garantias = ordens.filter(os => os.status === "garantia" || os.status === "finalizada").map(os => ({
     tipo: "os",
-    item: os.pecaProduto || "OS",
-    sn: os.serie || "",
-    qtd: 1,
-    motivo: "Garantia",
-    status: "Em Garantia",
+    numero: os.numero,
+    cliente: os.nomeCliente,
     data: os.dataCadastro || "",
+    periodo: "90 dias", // Default warranty period
+    status: os.status === "garantia" ? "Em Garantia" : "Finalizada",
     os: os
   }));
-  const lista = [...remessas, ...garantias];
+  const lista = garantias;
   const corpo = document.getElementById("corpo-remessas");
 
   const listaFiltrada =
@@ -783,33 +781,18 @@ function renderizarRemessas(filtro = "Todos") {
 
   corpo.innerHTML = listaFiltrada
     .map((r, index) => {
-      const originalIndex = lista.findIndex(
-        (original) =>
-          original.item === r.item &&
-          original.data === r.data &&
-          original.status === r.status,
-      );
-
       let acoes = "";
-      if (r.tipo === "os") {
+      if (r.status === "Em Garantia") {
         acoes = `<button class="btn-save" onclick="finalizarGarantia(${ordens.indexOf(r.os)})">Finalizar</button>`;
       } else {
-        if (r.status === "Aguardando Envio") {
-          acoes = `<button class="btn-save" onclick="atualizarStatusRemessa(${remessas.indexOf(r)}, 'Em Trânsito')">Enviar</button>`;
-        } else if (r.status === "Em Trânsito") {
-          acoes = `<button class="btn-save" onclick="atualizarStatusRemessa(${remessas.indexOf(r)}, 'Concluído')">Receber</button>`;
-        } else {
-          acoes = "<span>Finalizado</span>";
-        }
+        acoes = "<span>Finalizada</span>";
       }
 
       return `<tr>
-                  <td>${r.item}</td>
-                  <td>${r.sn || ""}</td>
-                  <td>${r.qtd}</td>
-                  <td><span class="badge">${r.motivo}</span></td>
-                  <td>${r.status}</td>
+                  <td>${r.numero}</td>
+                  <td>${r.cliente}</td>
                   <td>${r.data}</td>
+                  <td>${r.periodo}</td>
                   <td>${acoes}</td>
               </tr>`;
     })
